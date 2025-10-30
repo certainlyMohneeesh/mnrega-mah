@@ -9,10 +9,14 @@ interface PageProps {
 
 async function getDistrictData(id: string) {
   try {
-    // Use Vercel URL in production, localhost in development
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
+    // In production on Vercel, use absolute URL with the deployment domain
+    // In development, use localhost
+    const isProduction = process.env.VERCEL_ENV === 'production';
+    const baseUrl = isProduction 
+      ? 'https://mnrega-mah.vercel.app' 
+      : 'http://localhost:3000';
+    
+    console.log('🔍 Fetching district from:', `${baseUrl}/api/districts/${id}`);
     
     // Fetch district details with all metrics
     const districtRes = await fetch(`${baseUrl}/api/districts/${id}`, {
@@ -20,6 +24,7 @@ async function getDistrictData(id: string) {
     });
 
     if (!districtRes.ok) {
+      console.log('❌ District fetch failed:', districtRes.status);
       return null;
     }
 

@@ -12,10 +12,14 @@ async function getDistrictsData(d1?: string, d2?: string) {
   }
 
   try {
-    // Use Vercel URL in production, localhost in development
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
+    // In production on Vercel, use absolute URL with the deployment domain
+    // In development, use localhost
+    const isProduction = process.env.VERCEL_ENV === 'production';
+    const baseUrl = isProduction 
+      ? 'https://mnrega-mah.vercel.app' 
+      : 'http://localhost:3000';
+    
+    console.log('🔍 Fetching compare districts from:', baseUrl);
     const promises = [];
 
     if (d1) {
