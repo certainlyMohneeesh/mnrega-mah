@@ -65,16 +65,16 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#E76D67' }}>
-        <div className="mx-auto max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Illustration placeholder */}
-            <div className="hidden lg:flex items-center justify-center">
-              <div className="w-full max-w-md">
+      <section className="relative min-h-[90vh] flex items-center justify-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#E76D67' }}>
+        <div className="mx-auto max-w-6xl w-full">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Illustration - Visible on all screens, positioned above on mobile */}
+            <div className="flex items-center justify-center w-full order-1 lg:order-none">
+              <div className="w-full max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-md">
                 {/* Abstract illustration representing rural employment */}
                 <div className="relative">
-                  <div className="absolute inset-0 bg-white/10 rounded-full blur-3xl"></div>
-                  <svg viewBox="0 0 400 400" className="w-full h-auto relative z-10">
+                  <div className="absolute inset-0 bg-white/10 rounded-full blur-2xl sm:blur-3xl"></div>
+                  <svg viewBox="0 0 400 400" className="w-full h-auto relative z-10" aria-hidden="true">
                     <circle cx="200" cy="200" r="150" fill="white" opacity="0.1"/>
                     <circle cx="200" cy="200" r="120" fill="white" opacity="0.15"/>
                     <circle cx="200" cy="200" r="90" fill="white" opacity="0.2"/>
@@ -88,30 +88,30 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
               </div>
             </div>
 
-            {/* Right side - Content */}
-            <div className="space-y-8 text-white">
-              <div className="space-y-6">
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight text-white">
+            {/* Content - Below illustration on mobile, right side on desktop */}
+            <div className="space-y-6 sm:space-y-8 text-white text-center lg:text-left order-2 lg:order-none">
+              <div className="space-y-4 sm:space-y-6">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
                   {t('home.title.our')}{" "}
                   <span className="block" style={{ color: '#252653' }}>
                     {t('home.title.rights')}
                   </span>
                 </h1>
                 
-                <p className="text-xl sm:text-2xl leading-relaxed text-white max-w-lg">
+                <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white max-w-lg mx-auto lg:mx-0">
                   {t('home.subtitle')}
                 </p>
               </div>
 
               {stateStats && (
-                <div className="flex items-center gap-2 text-sm text-white">
+                <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-white">
                   <Clock className="h-4 w-4" />
                   <span>{t('home.lastUpdated')}: {formatDate(stateStats.lastUpdated)}</span>
                 </div>
               )}
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4 pt-4">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2 sm:pt-4">
                 <Link 
                   href="#districts"
                   className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-md font-semibold transition-colors border-2 border-white hover:bg-[#514E80] hover:text-white"
