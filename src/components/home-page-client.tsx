@@ -6,6 +6,7 @@ import { SearchBar } from "@/components/search-bar";
 import { StatCard } from "@/components/stat-card";
 import { DistrictCard } from "@/components/district-card";
 import { StickyBanner } from "@/components/ui/sticky-banner";
+import { LocationDetector } from "@/components/location-detector";
 import {
   TrendingUp,
   Users,
@@ -416,6 +417,9 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
           </div>
         </div>
       </footer>
+
+      {/* Location Detector */}
+      <LocationDetector />
     </div>
   );
 }
