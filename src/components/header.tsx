@@ -39,7 +39,7 @@ export function Header() {
             {t('nav.home')}
           </Link>
           <Link
-            href="/"
+            href="/#districts"
             className="text-sm font-semibold leading-6 text-gray-900 hover:text-brand transition-colors"
           >
             {t('nav.districts')}

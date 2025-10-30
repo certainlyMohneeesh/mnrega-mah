@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { SearchBar } from "@/components/search-bar";
 import { StatCard } from "@/components/stat-card";
 import { DistrictCard } from "@/components/district-card";
+import { StickyBanner } from "@/components/ui/sticky-banner";
 import {
   TrendingUp,
   Users,
@@ -16,6 +17,7 @@ import {
   BarChart3,
   FileText,
   Shield,
+  Globe,
 } from "lucide-react";
 import { formatIndianNumber, formatNumber, formatDate } from "@/lib/utils";
 import { useLanguage } from "@/contexts/language-context";
@@ -48,8 +50,22 @@ interface HomePageClientProps {
 
 export function HomePageClient({ initialData }: HomePageClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showBanner, setShowBanner] = useState(true);
   const { districts, stateStats } = initialData;
   const { t } = useLanguage();
+
+  // Check if banner was previously dismissed
+  useEffect(() => {
+    const bannerDismissed = localStorage.getItem('languageBannerDismissed');
+    if (bannerDismissed === 'true') {
+      setShowBanner(false);
+    }
+  }, []);
+
+  const handleDismissBanner = () => {
+    localStorage.setItem('languageBannerDismissed', 'true');
+    setShowBanner(false);
+  };
 
   const filteredDistricts = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -64,6 +80,18 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Language Availability Banner */}
+      {showBanner && (
+        <StickyBanner className="bg-[#514E80]" onDismiss={handleDismissBanner}>
+          <div className="flex items-center justify-center gap-2 text-white text-sm sm:text-base font-medium">
+            <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="text-center">
+              Now Available in English, Hindi, and Marathi. Just toggle the language selector in the header to switch!
+            </span>
+          </div>
+        </StickyBanner>
+      )}
+
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#E76D67' }}>
         <div className="mx-auto max-w-6xl w-full">

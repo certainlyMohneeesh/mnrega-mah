@@ -7,10 +7,12 @@ export const StickyBanner = ({
   className,
   children,
   hideOnScroll = false,
+  onDismiss,
 }: {
   className?: string;
   children: React.ReactNode;
   hideOnScroll?: boolean;
+  onDismiss?: () => void;
 }) => {
   const [open, setOpen] = useState(true);
   const { scrollY } = useScroll();
@@ -23,6 +25,16 @@ export const StickyBanner = ({
       setOpen(true);
     }
   });
+
+  const handleClose = () => {
+    setOpen(false);
+    if (onDismiss) {
+      // Call onDismiss after animation completes
+      setTimeout(() => {
+        onDismiss();
+      }, 300);
+    }
+  };
 
   return (
     <motion.div
@@ -53,7 +65,7 @@ export const StickyBanner = ({
           scale: 1,
         }}
         className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer"
-        onClick={() => setOpen(!open)}
+        onClick={handleClose}
       >
         <CloseIcon className="h-5 w-5 text-white" />
       </motion.button>
