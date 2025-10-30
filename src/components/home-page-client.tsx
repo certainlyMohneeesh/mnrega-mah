@@ -80,19 +80,19 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Language Availability Banner */}
-      {showBanner && (
-        <StickyBanner className="bg-[#514E80]" onDismiss={handleDismissBanner}>
-          <div className="flex items-center justify-center gap-2 text-white text-sm sm:text-base font-medium">
-            <Globe className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-center">
-              Now Available in English, Hindi, and Marathi. Just toggle the language selector in the header to switch!
-            </span>
-          </div>
-        </StickyBanner>
-      )}
+      {/* /* Language Availability Banner */}
+        {showBanner && (
+          <StickyBanner className="bg-[#514E80]" onDismiss={handleDismissBanner}>
+            <div className="flex items-start sm:items-center justify-center gap-2 sm:gap-3 text-white px-2 sm:px-4">
+          <Globe className="h-5 w-5 flex-shrink-0 mt-0.5 sm:mt-0" />
+          <span className="text-xs sm:text-sm md:text-base font-medium text-left sm:text-center leading-relaxed">
+            Now Available in English, Hindi, and Marathi. Just toggle the language selector in the header to switch!
+          </span>
+            </div>
+          </StickyBanner>
+        )}
 
-      {/* Hero Section */}
+        {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#E76D67' }}>
         <div className="mx-auto max-w-6xl w-full">
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
