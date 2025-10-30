@@ -21,9 +21,9 @@ export function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold text-lg" style={{ background: 'linear-gradient(to bottom right, #E76D67, #514E80)' }}>
             M
-          </div>
+            </div>
           <div className="hidden sm:block">
             <div className="text-sm font-bold text-gray-900">MGNREGA</div>
             <div className="text-xs text-gray-500">Maharashtra</div>
