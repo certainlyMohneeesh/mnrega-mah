@@ -44,24 +44,25 @@ export const redis = getRedisClient();
 
 /**
  * Cache key patterns for consistent naming
+ * v2 prefix added to bust old caches after API fix
  */
 export const CacheKeys = {
   // District keys
-  DISTRICT_LIST: "districts:all",
-  DISTRICT_BY_ID: (id: string) => `district:${id}`,
-  DISTRICT_BY_CODE: (code: string) => `district:code:${code}`,
+  DISTRICT_LIST: "v2:districts:all",
+  DISTRICT_BY_ID: (id: string) => `v2:district:${id}`,
+  DISTRICT_BY_CODE: (code: string) => `v2:district:code:${code}`,
 
   // Metrics keys
-  DISTRICT_LATEST: (districtId: string) => `district:${districtId}:latest`,
+  DISTRICT_LATEST: (districtId: string) => `v2:district:${districtId}:latest`,
   DISTRICT_HISTORY: (districtId: string, from?: string, to?: string) =>
-    `district:${districtId}:history:${from || "all"}:${to || "now"}`,
+    `v2:district:${districtId}:history:${from || "all"}:${to || "now"}`,
 
   // Comparison keys
-  COMPARE: (d1: string, d2: string, metric: string) => `compare:${d1}:${d2}:${metric}`,
+  COMPARE: (d1: string, d2: string, metric: string) => `v2:compare:${d1}:${d2}:${metric}`,
 
   // State-level aggregates
-  STATE_LATEST: "state:MH:latest",
-  STATE_HISTORY: (from?: string, to?: string) => `state:MH:history:${from || "all"}:${to || "now"}`,
+  STATE_LATEST: "v2:state:MH:latest",
+  STATE_HISTORY: (from?: string, to?: string) => `v2:state:MH:history:${from || "all"}:${to || "now"}`,
 };
 
 /**
