@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { SearchBar } from "@/components/search-bar";
 import { StatCard } from "@/components/stat-card";
 import { DistrictCard } from "@/components/district-card";
@@ -128,22 +129,17 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
       <section className="relative min-h-[90vh] flex items-center justify-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#E76D67' }}>
         <div className="mx-auto max-w-6xl w-full">
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Illustration - Visible on all screens, positioned above on mobile */}
+            {/* Maharashtra Map Illustration - Visible on all screens, positioned above on mobile */}
             <div className="flex items-center justify-center w-full order-1 lg:order-none">
-              <div className="w-full max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-md">
-                {/* Abstract illustration representing rural employment */}
+              <div className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-2xl">
+                {/* Maharashtra state map with glow effect */}
                 <div className="relative">
-                  <div className="absolute inset-0 bg-white/10 rounded-full blur-2xl sm:blur-3xl"></div>
-                  <svg viewBox="0 0 400 400" className="w-full h-auto relative z-10" aria-hidden="true">
-                    <circle cx="200" cy="200" r="150" fill="white" opacity="0.1"/>
-                    <circle cx="200" cy="200" r="120" fill="white" opacity="0.15"/>
-                    <circle cx="200" cy="200" r="90" fill="white" opacity="0.2"/>
-                    <path d="M200 110 L200 290 M110 200 L290 200" stroke="white" strokeWidth="8" strokeLinecap="round" opacity="0.3"/>
-                    <circle cx="200" cy="110" r="15" fill="#514E80"/>
-                    <circle cx="290" cy="200" r="15" fill="#514E80"/>
-                    <circle cx="200" cy="290" r="15" fill="#514E80"/>
-                    <circle cx="110" cy="200" r="15" fill="#514E80"/>
-                  </svg>
+                  <div className="absolute inset-0 bg-white/10 rounded-full blur-3xl"></div>
+                  <img 
+                    src="/Mah-dots.svg" 
+                    alt="Maharashtra Map" 
+                    className="w-full h-auto relative z-10 opacity-90 drop-shadow-lg"
+                  />
                 </div>
               </div>
             </div>
@@ -292,41 +288,146 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-brand/10 rounded-full mb-4">
-                <BarChart3 className="h-8 w-8 text-brand" />
-              </div>
+            <motion.div 
+              className="text-center space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <motion.div 
+                className="inline-flex items-center justify-center w-20 h-20 mb-4 relative"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="absolute inset-0 bg-brand/5 rounded-full blur-xl"></div>
+                <svg viewBox="0 0 80 80" className="w-full h-auto relative z-10" aria-hidden="true">
+                  <motion.circle 
+                    cx="40" cy="40" r="30" 
+                    fill="#E76D67" opacity="0.1"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.circle 
+                    cx="40" cy="40" r="24" 
+                    fill="#E76D67" opacity="0.15"
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                  />
+                  <motion.circle 
+                    cx="40" cy="40" r="18" 
+                    fill="#E76D67" opacity="0.2"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+                  />
+                  <path d="M40 22 L40 58 M22 40 L58 40" stroke="#E76D67" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+                  <circle cx="40" cy="22" r="3" fill="#514E80"/>
+                  <circle cx="58" cy="40" r="3" fill="#514E80"/>
+                  <circle cx="40" cy="58" r="3" fill="#514E80"/>
+                  <circle cx="22" cy="40" r="3" fill="#514E80"/>
+                </svg>
+              </motion.div>
               <h3 className="text-xl font-bold text-gray-900">
                 {t('home.interactiveDashboards')}
               </h3>
               <p className="text-gray-600">
                 {t('home.interactiveDashboardsDesc')}
               </p>
-            </div>
+            </motion.div>
 
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-accent-purple/10 rounded-full mb-4">
-                <FileText className="h-8 w-8 text-accent-purple" />
-              </div>
+            <motion.div 
+              className="text-center space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <motion.div 
+                className="inline-flex items-center justify-center w-20 h-20 mb-4 relative"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="absolute inset-0 bg-accent-purple/5 rounded-full blur-xl"></div>
+                <svg viewBox="0 0 80 80" className="w-full h-auto relative z-10" aria-hidden="true">
+                  <motion.circle 
+                    cx="40" cy="40" r="30" 
+                    fill="#514E80" opacity="0.1"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.circle 
+                    cx="40" cy="40" r="24" 
+                    fill="#514E80" opacity="0.15"
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                  />
+                  <motion.circle 
+                    cx="40" cy="40" r="18" 
+                    fill="#514E80" opacity="0.2"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+                  />
+                  <path d="M40 22 L40 58 M22 40 L58 40" stroke="#514E80" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+                  <circle cx="40" cy="22" r="3" fill="#E76D67"/>
+                  <circle cx="58" cy="40" r="3" fill="#E76D67"/>
+                  <circle cx="40" cy="58" r="3" fill="#E76D67"/>
+                  <circle cx="22" cy="40" r="3" fill="#E76D67"/>
+                </svg>
+              </motion.div>
               <h3 className="text-xl font-bold text-gray-900">
                 {t('home.historicalAnalysis')}
               </h3>
               <p className="text-gray-600">
                 {t('home.historicalAnalysisDesc')}
               </p>
-            </div>
+            </motion.div>
 
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-visuals-6/10 rounded-full mb-4">
-                <Shield className="h-8 w-8 text-visuals-6" />
-              </div>
+            <motion.div 
+              className="text-center space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <motion.div 
+                className="inline-flex items-center justify-center w-20 h-20 mb-4 relative"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="absolute inset-0 bg-visuals-6/5 rounded-full blur-xl"></div>
+                <svg viewBox="0 0 80 80" className="w-full h-auto relative z-10" aria-hidden="true">
+                  <motion.circle 
+                    cx="40" cy="40" r="30" 
+                    fill="#F97316" opacity="0.1"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <motion.circle 
+                    cx="40" cy="40" r="24" 
+                    fill="#F97316" opacity="0.15"
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                  />
+                  <motion.circle 
+                    cx="40" cy="40" r="18" 
+                    fill="#F97316" opacity="0.2"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+                  />
+                  <path d="M40 22 L40 58 M22 40 L58 40" stroke="#F97316" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+                  <circle cx="40" cy="22" r="3" fill="#514E80"/>
+                  <circle cx="58" cy="40" r="3" fill="#514E80"/>
+                  <circle cx="40" cy="58" r="3" fill="#514E80"/>
+                  <circle cx="22" cy="40" r="3" fill="#514E80"/>
+                </svg>
+              </motion.div>
               <h3 className="text-xl font-bold text-gray-900">
                 {t('home.transparentData')}
               </h3>
               <p className="text-gray-600">
                 {t('home.transparentDataDesc')}
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -372,8 +473,17 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
             {/* Logo & Description */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-lg flex items-center justify-center text-white font-bold text-xl" style={{ background: 'linear-gradient(135deg, #E76D67 0%, #514E80 100%)' }}>
-                  M
+                <div className="h-12 w-12 rounded-lg flex items-center justify-center relative" style={{ background: 'linear-gradient(135deg, #E76D67 0%, #514E80 100%)' }}>
+                  <svg viewBox="0 0 48 48" className="w-8 h-8" aria-hidden="true">
+                    <circle cx="24" cy="24" r="18" fill="white" opacity="0.1"/>
+                    <circle cx="24" cy="24" r="14" fill="white" opacity="0.15"/>
+                    <circle cx="24" cy="24" r="11" fill="white" opacity="0.2"/>
+                    <path d="M24 13 L24 35 M13 24 L35 24" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
+                    <circle cx="24" cy="13" r="2" fill="white"/>
+                    <circle cx="35" cy="24" r="2" fill="white"/>
+                    <circle cx="24" cy="35" r="2" fill="white"/>
+                    <circle cx="13" cy="24" r="2" fill="white"/>
+                  </svg>
                 </div>
                 <div>
                   <div className="text-base font-bold text-gray-900">MGNREGA Maharashtra</div>

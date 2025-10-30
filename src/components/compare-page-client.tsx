@@ -139,7 +139,7 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
         const metric = district.metrics[districts[0].metrics.length - 12 + idx];
         if (metric) {
           dataPoint[district.name] = key === 'totalExpenditure' 
-            ? metric[key] / 10000000  // Convert to Crores
+            ? metric[key] / 1000  // Convert to thousands (K)
             : metric[key];
         }
       });

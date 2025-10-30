@@ -47,7 +47,7 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
   // Prepare trend data (last 12 months)
   const trendData = district.metrics.slice(0, 12).reverse().map((m) => ({
     period: `${m.month.substring(0, 3)} ${m.finYear}`,
-    expenditure: m.totalExpenditure / 10000000, // Convert to Crores
+    expenditure: m.totalExpenditure / 1000, // Convert to thousands (K)
     households: m.totalHouseholdsWorked,
     works: m.numberOfCompletedWorks + m.numberOfOngoingWorks,
   }));

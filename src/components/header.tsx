@@ -21,8 +21,17 @@ export function Header() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold text-lg" style={{ background: 'linear-gradient(to bottom right, #E76D67, #514E80)' }}>
-            M
+            <div className="h-10 w-10 rounded-lg flex items-center justify-center relative" style={{ background: 'linear-gradient(to bottom right, #E76D67, #514E80)' }}>
+              <svg viewBox="0 0 40 40" className="w-6 h-6" aria-hidden="true">
+                <circle cx="20" cy="20" r="15" fill="white" opacity="0.1"/>
+                <circle cx="20" cy="20" r="12" fill="white" opacity="0.15"/>
+                <circle cx="20" cy="20" r="9" fill="white" opacity="0.2"/>
+                <path d="M20 11 L20 29 M11 20 L29 20" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.4"/>
+                <circle cx="20" cy="11" r="1.5" fill="white"/>
+                <circle cx="29" cy="20" r="1.5" fill="white"/>
+                <circle cx="20" cy="29" r="1.5" fill="white"/>
+                <circle cx="11" cy="20" r="1.5" fill="white"/>
+              </svg>
             </div>
           <div className="hidden sm:block">
             <div className="text-sm font-bold text-gray-900">MGNREGA</div>
