@@ -44,46 +44,35 @@ export async function GET(
       console.warn(`⚠️ Cached district ${id} has no metrics, refetching`);
     }
 
-    // Fetch district with all metrics using more efficient query
-    const district = await prisma.district.findFirst({
-      where: { 
-        id,
-        metrics: {
-          some: {} // Ensure district has at least one metric
-        }
-      },
+    // First, check if district exists at all
+    const district = await prisma.district.findUnique({
+      where: { id },
       include: {
         metrics: {
           orderBy: [
             { finYear: "desc" },
             { createdAt: "desc" },
           ],
-          take: 24, // Get last 24 months of data
         },
       },
     });
 
     if (!district) {
-      console.error(`❌ District ${id} not found or has no metrics`);
+      console.error(`❌ District ${id} not found in database`);
       return NextResponse.json(
         {
           success: false,
-          error: "District not found or has no metrics data",
+          error: "District not found",
         },
         { status: 404 }
       );
     }
 
-    // Double-check metrics exist (should always be true due to query filter)
+    // Check if metrics exist
     if (!district.metrics || district.metrics.length === 0) {
-      console.error(`❌ District ${id} (${district.name}) has no metrics despite query filter`);
-      return NextResponse.json(
-        {
-          success: false,
-          error: "District has no metrics data available",
-        },
-        { status: 404 }
-      );
+      console.warn(`⚠️ District ${id} (${district.name}) exists but has no metrics`);
+      // Return district anyway but with empty metrics array
+      // This is better than 404
     }
 
     // Cache the valid response
