@@ -52,7 +52,9 @@ interface HomePageClientProps {
 export function HomePageClient({ initialData }: HomePageClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showBanner, setShowBanner] = useState(true);
-  const { districts, stateStats } = initialData;
+  const [districts, setDistricts] = useState<District[]>(initialData.districts);
+  const [stateStats, setStateStats] = useState(initialData.stateStats);
+  const [isLoading, setIsLoading] = useState(false);
   const { t } = useLanguage();
 
   // Check if banner was previously dismissed
@@ -62,6 +64,34 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
       setShowBanner(false);
     }
   }, []);
+
+  // Fallback: If districts are empty on initial load, fetch client-side
+  useEffect(() => {
+    if (districts.length === 0 && !isLoading) {
+      console.log('🔄 No initial districts, fetching client-side...');
+      setIsLoading(true);
+      
+      Promise.all([
+        fetch('/api/districts?includeStats=true').then(res => res.json()),
+        fetch('/api/state/latest').then(res => res.json())
+      ])
+        .then(([districtsData, stateData]) => {
+          if (districtsData.success) {
+            console.log('✅ Client-side districts loaded:', districtsData.data.length);
+            setDistricts(districtsData.data);
+          }
+          if (stateData.success) {
+            setStateStats(stateData.data);
+          }
+        })
+        .catch(error => {
+          console.error('❌ Client-side fetch failed:', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [districts.length, isLoading]);
 
   const handleDismissBanner = () => {
     localStorage.setItem('languageBannerDismissed', 'true');
