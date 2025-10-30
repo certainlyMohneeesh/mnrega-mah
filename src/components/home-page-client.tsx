@@ -60,6 +60,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
   // Check if banner was previously dismissed
   useEffect(() => {
     const bannerDismissed = localStorage.getItem('languageBannerDismissed');
+    
     if (bannerDismissed === 'true') {
       setShowBanner(false);
     }
