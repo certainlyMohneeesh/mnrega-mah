@@ -1,11 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/language-context";
+
+const languages = [
+  { code: 'mr', name: 'मराठी', englishName: 'Marathi' },
+  { code: 'hi', name: 'हिंदी', englishName: 'Hindi' },
+  { code: 'en', name: 'English', englishName: 'English' },
+] as const;
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -25,36 +34,60 @@ export function Header() {
         <div className="hidden lg:flex lg:gap-x-8">
           <Link
             href="/"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-orange-600 transition-colors"
+            className="text-sm font-semibold leading-6 text-gray-900 hover:text-brand transition-colors"
           >
-            Home
+            {t('nav.home')}
           </Link>
           <Link
-            href="/districts"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-orange-600 transition-colors"
+            href="/"
+            className="text-sm font-semibold leading-6 text-gray-900 hover:text-brand transition-colors"
           >
-            Districts
+            {t('nav.districts')}
           </Link>
           <Link
             href="/compare"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-orange-600 transition-colors"
+            className="text-sm font-semibold leading-6 text-gray-900 hover:text-brand transition-colors"
           >
-            Compare
+            {t('nav.compare')}
           </Link>
           <Link
             href="/about"
-            className="text-sm font-semibold leading-6 text-gray-900 hover:text-orange-600 transition-colors"
+            className="text-sm font-semibold leading-6 text-gray-900 hover:text-brand transition-colors"
           >
-            About
+            {t('nav.about')}
           </Link>
         </div>
 
         {/* Language Selector */}
-        <div className="hidden lg:flex lg:items-center lg:gap-x-4">
-          <button className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors">
+        <div className="hidden lg:flex lg:items-center lg:gap-x-4 relative">
+          <button 
+            className="flex items-center gap-2 rounded-full bg-brand/10 px-4 py-2 text-sm font-medium text-brand hover:bg-brand/20 transition-colors"
+            onClick={() => setLangMenuOpen(!langMenuOpen)}
+          >
             <Globe className="h-4 w-4" />
-            <span>English</span>
+            <span>{languages.find(l => l.code === language)?.name}</span>
+            <ChevronDown className="h-3 w-3" />
           </button>
+          
+          {langMenuOpen && (
+            <div className="absolute right-0 top-full mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200 py-1 z-50">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setLanguage(lang.code as any);
+                    setLangMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                    language === lang.code ? 'bg-brand/5 text-brand font-medium' : 'text-gray-700'
+                  }`}
+                >
+                  {lang.name}
+                  <span className="text-xs text-gray-500 ml-2">({lang.englishName})</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -80,33 +113,47 @@ export function Header() {
               className="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Home
+              {t('nav.home')}
             </Link>
             <Link
-              href="/districts"
+              href="/"
               className="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Districts
+              {t('nav.districts')}
             </Link>
             <Link
               href="/compare"
               className="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Compare
+              {t('nav.compare')}
             </Link>
             <Link
               href="/about"
               className="block rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50"
               onClick={() => setMobileMenuOpen(false)}
             >
-              About
+              {t('nav.about')}
             </Link>
-            <button className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold text-gray-900 hover:bg-gray-50">
-              <Globe className="h-5 w-5" />
-              <span>English</span>
-            </button>
+            
+            <div className="pt-2 border-t mt-2">
+              <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase">Language</div>
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setLanguage(lang.code as any);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left block rounded-lg px-3 py-2 text-base font-semibold hover:bg-gray-50 ${
+                    language === lang.code ? 'bg-brand/5 text-brand' : 'text-gray-900'
+                  }`}
+                >
+                  {lang.name}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

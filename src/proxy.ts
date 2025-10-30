@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Simple middleware that doesn't interfere with routing
+// Simple proxy that doesn't interfere with routing
 // i18n will be handled at the component level for now
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Allow all requests to pass through
   return NextResponse.next();
 }

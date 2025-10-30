@@ -18,22 +18,34 @@ export async function GET(request: NextRequest) {
     const cached = await getCached<any[]>(cacheKey);
 
     if (cached) {
-      return NextResponse.json({
-        success: true,
-        data: cached,
-        cached: true,
-      });
+      return NextResponse.json(
+        {
+          success: true,
+          data: cached,
+          cached: true,
+        },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+          },
+        }
+      );
     }
 
-    // Fetch from database
+    // Fetch only districts that have metrics - more efficient single query
     const districts = await prisma.district.findMany({
       where: {
         stateCode: "18", // Maharashtra state code
+        metrics: {
+          some: {} // Only include districts that have at least one metric
+        }
       },
       orderBy: {
         name: "asc",
       },
     });
+
+    console.log(`✅ Found ${districts.length} districts with metrics data`);
 
     // If stats are requested, fetch latest metrics for each district
     let response;
@@ -63,11 +75,18 @@ export async function GET(request: NextRequest) {
     // Cache the response
     await setCached(cacheKey, response, CacheTTL.DISTRICT_LIST);
 
-    return NextResponse.json({
-      success: true,
-      data: response,
-      cached: false,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: response,
+        cached: false,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+        },
+      }
+    );
   } catch (error) {
     console.error("❌ Error fetching districts:", error);
     return NextResponse.json(

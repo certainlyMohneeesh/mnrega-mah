@@ -12,6 +12,64 @@ const config: Config = {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // Tattle-inspired brand colors
+        brand: {
+          DEFAULT: "#E76D67", // Coral/salmon primary
+          50: "#FDF3F2",
+          100: "#FCE7E5",
+          200: "#F9CCC9",
+          300: "#F5ADA9",
+          400: "#F08D87",
+          500: "#E76D67", // Main brand
+          600: "#E04E47",
+          700: "#C63630",
+          800: "#A42F28",
+          900: "#872A24",
+        },
+        "accent-purple": {
+          DEFAULT: "#514E80", // Deep purple
+          50: "#F5F5F9",
+          100: "#EBEBF3",
+          200: "#D2D0E3",
+          300: "#B5B1CF",
+          400: "#9590B8",
+          500: "#7F7AB0",
+          600: "#514E80", // Main accent
+          700: "#3F3D62",
+          800: "#2F2D48",
+          900: "#252653",
+        },
+        "accent-light": {
+          DEFAULT: "#7F7AB0",
+          50: "#F7F6FC",
+          100: "#EFEEF9",
+          200: "#DDD9F0",
+          300: "#C5BFE4",
+          400: "#A9A1D5",
+          500: "#7F7AB0",
+          600: "#6A6599",
+          700: "#565280",
+          800: "#454167",
+          900: "#393654",
+        },
+        neutral: {
+          pink: "#E68BBA",
+          purple: "#856993",
+          cream: "#EDC9C4",
+          maroon: "#70234B",
+        },
+        visuals: {
+          1: "#ffebcb",
+          2: "#fcbfa4",
+          3: "#f4c6d7",
+          4: "#f39695",
+          5: "#e99469",
+          6: "#f3a444",
+          7: "#e56d67",
+          8: "#815089",
+          9: "#4d5182",
+          10: "#020637",
+        },
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
