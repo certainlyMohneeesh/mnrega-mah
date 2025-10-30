@@ -119,27 +119,24 @@ export async function POST(request: NextRequest) {
             const districtId = districtMap.get(metric.districtCode);
             if (!districtId || !metric.finYear || !metric.month) return;
 
-            // Remove fields that aren't in schema
-            const { id, districtCode, createdAt, updatedAt, ...restData } = metric;
+            // Remove fields that aren't in schema (id, districtId from JSON, districtCode, createdAt, updatedAt)
+            const { id, districtId: _oldDistrictId, districtCode, createdAt, updatedAt, ...metricData } = metric;
 
-            const metricData = {
-              finYear: metric.finYear,
-              month: metric.month,
-              ...restData,
-            };
+            // Ensure finYear and month are present
+            if (!metricData.finYear || !metricData.month) return;
 
             await prisma.monthlyMetric.upsert({
               where: {
                 districtId_finYear_month: {
                   districtId,
-                  finYear: metric.finYear,
-                  month: metric.month,
+                  finYear: metricData.finYear as string,
+                  month: metricData.month as string,
                 },
               },
-              update: metricData,
+              update: metricData as any,
               create: {
                 districtId,
-                ...metricData,
+                ...(metricData as any),
               },
             });
             successCount++;
