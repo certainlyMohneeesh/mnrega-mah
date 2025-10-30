@@ -14,6 +14,7 @@ import {
 import { LineChart } from "@/components/charts/line-chart";
 import { BarChart } from "@/components/charts/bar-chart";
 import { formatIndianNumber, formatNumber } from "@/lib/utils";
+import { useLanguage } from "@/contexts/language-context";
 
 interface District {
   id: string;
@@ -38,6 +39,7 @@ interface ComparePageClientProps {
 }
 
 export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClientProps) {
+  const { t } = useLanguage();
   const [districts, setDistricts] = useState<District[]>(initialDistricts);
   const [allDistricts, setAllDistricts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -157,18 +159,18 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
       <div className="py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#514E80' }}>
         <div className="mx-auto max-w-7xl">
           <Link 
-            href="/" 
+            href="/#districts" 
             className="inline-flex items-center gap-2 text-white hover:text-white/90 transition-colors mb-6 text-sm font-medium"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Districts</span>
+            <span>{t('compare.backToDistricts')}</span>
           </Link>
           
           <h1 className="text-4xl font-bold sm:text-5xl md:text-6xl text-white" style={{ lineHeight: '1.2' }}>
-            Compare Districts
+            {t('compare.title')}
           </h1>
           <p className="mt-3 text-lg text-white font-medium">
-            Side-by-side comparison of MGNREGA metrics
+            {t('compare.subtitle')}
           </p>
         </div>
       </div>
@@ -176,7 +178,7 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 space-y-8">
         {/* District Selection */}
         <section>
-          <h2 className="text-3xl font-bold mb-6" style={{ color: '#252653' }}>Selected Districts</h2>
+          <h2 className="text-3xl font-bold mb-6" style={{ color: '#252653' }}>{t('compare.selectedDistricts')}</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {districts.map((district) => (
               <Card key={district.id}>
@@ -184,7 +186,7 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="text-lg">{district.name}</CardTitle>
-                      <CardDescription>Code: {district.code}</CardDescription>
+                      <CardDescription>{t('compare.code')}: {district.code}</CardDescription>
                     </div>
                     <button
                       onClick={() => removeDistrict(district.id)}
@@ -196,7 +198,7 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    {district.metrics.length} months of data
+                    {district.metrics.length} {t('compare.monthsOfData')}
                   </p>
                 </CardContent>
               </Card>
@@ -205,9 +207,9 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
             {districts.length < 4 && (
               <Card className="border-dashed">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Add District</CardTitle>
+                  <CardTitle className="text-lg">{t('compare.addDistrict')}</CardTitle>
                   <CardDescription>
-                    {loading ? 'Loading district data...' : `${allDistricts.length - districts.length} districts available`}
+                    {loading ? t('compare.loadingDistrict') : `${allDistricts.length - districts.length} ${t('compare.districtsAvailable')}`}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -217,15 +219,15 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder={
-                        loading ? "Loading..." : 
-                        allDistricts.length === 0 ? "No districts available" :
-                        "Select a district..."
+                        loading ? t('compare.loading') : 
+                        allDistricts.length === 0 ? t('compare.noDistrictsAvailable') :
+                        t('compare.selectDistrict')
                       } />
                     </SelectTrigger>
                     <SelectContent>
                       {allDistricts.length === 0 ? (
                         <div className="p-4 text-sm text-gray-500 text-center">
-                          No districts with data available
+                          {t('compare.noDistrictsWithData')}
                         </div>
                       ) : (
                         allDistricts
@@ -246,8 +248,8 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
 
         {districts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-lg text-gray-600 mb-4">No districts selected for comparison</p>
-            <p className="text-sm text-gray-500">Select districts from the list above to compare their metrics</p>
+            <p className="text-lg text-gray-600 mb-4">{t('compare.noDistrictsSelected')}</p>
+            <p className="text-sm text-gray-500">{t('compare.selectDistrictsPrompt')}</p>
           </div>
         )}
 
@@ -257,9 +259,9 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
             <section>
               <Card className="border-t-4" style={{ borderTopColor: '#E76D67' }}>
                 <CardHeader>
-                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>Expenditure Comparison</CardTitle>
+                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>{t('compare.expenditureComparison')}</CardTitle>
                   <CardDescription className="text-base">
-                    Monthly expenditure over the last 12 months (in Crores)
+                    {t('compare.expenditureComparisonDesc')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -281,9 +283,9 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
             <section>
               <Card className="border-t-4" style={{ borderTopColor: '#3B82F6' }}>
                 <CardHeader>
-                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>Households Employment Comparison</CardTitle>
+                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>{t('compare.householdsComparison')}</CardTitle>
                   <CardDescription className="text-base">
-                    Number of households worked over the last 12 months
+                    {t('compare.householdsComparisonDesc')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -305,9 +307,9 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
             <section>
               <Card className="border-t-4" style={{ borderTopColor: '#10B981' }}>
                 <CardHeader>
-                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>Completed Works Comparison</CardTitle>
+                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>{t('compare.worksComparison')}</CardTitle>
                   <CardDescription className="text-base">
-                    Number of completed works over the last 12 months
+                    {t('compare.worksComparisonDesc')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -329,9 +331,9 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
             <section>
               <Card className="border-t-4" style={{ borderTopColor: '#514E80' }}>
                 <CardHeader>
-                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>Latest Metrics Comparison</CardTitle>
+                  <CardTitle className="text-2xl" style={{ color: '#252653' }}>{t('compare.latestMetrics')}</CardTitle>
                   <CardDescription className="text-base">
-                    Most recent data for selected districts
+                    {t('compare.latestMetricsDesc')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -339,12 +341,12 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b-2" style={{ borderBottomColor: '#514E80' }}>
-                          <th className="p-4 text-left font-bold text-gray-900 bg-gray-50">District</th>
-                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Expenditure</th>
-                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Households</th>
-                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Completed</th>
-                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Ongoing</th>
-                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Avg Wage/Day</th>
+                          <th className="p-4 text-left font-bold text-gray-900 bg-gray-50">{t('table.district')}</th>
+                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.expenditure')}</th>
+                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.households')}</th>
+                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.completed')}</th>
+                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.ongoing')}</th>
+                          <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.avgWage')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -356,7 +358,7 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
                                 {district.name}
                               </td>
                               <td className="p-4 text-right font-semibold text-green-600">
-                                ₹{formatIndianNumber(latest.totalExpenditure)}
+                                {formatIndianNumber(latest.totalExpenditure)}
                               </td>
                               <td className="p-4 text-right text-gray-700">
                                 {formatNumber(latest.totalHouseholdsWorked)}

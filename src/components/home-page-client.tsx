@@ -117,7 +117,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                   className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-md font-semibold transition-colors border-2 border-white hover:bg-[#514E80] hover:text-white"
                   style={{ borderColor: 'white' }}
                 >
-                  Explore Districts
+                  {t('home.exploreDistricts')}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link 
@@ -125,7 +125,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-md font-semibold transition-colors"
                   style={{ backgroundColor: '#514E80', color: 'white' }}
                 >
-                  Compare Data
+                  {t('home.compareData')}
                 </Link>
               </div>
             </div>
@@ -139,10 +139,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
           <div className="mx-auto max-w-5xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
-                Maharashtra at a Glance
+                {t('home.maharashtraGlance')}
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Real-time data across all {stateStats.aggregates.totalDistricts} districts of Maharashtra
+                {t('home.maharashtraGlanceDesc').replace('{count}', stateStats.aggregates.totalDistricts)}
               </p>
             </div>
 
@@ -157,7 +157,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                   </h3>
                 </div>
                 <p className="text-3xl font-bold text-gray-900 mb-1">
-                  ₹{formatIndianNumber(stateStats.aggregates.totalExpenditure)}
+                  {formatIndianNumber(stateStats.aggregates.totalExpenditure)}
                 </p>
                 <p className="text-sm text-gray-500">
                   {t('home.stats.acrossDistricts').replace('{count}', stateStats.aggregates.totalDistricts)}
@@ -177,7 +177,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                   {formatNumber(stateStats.aggregates.householdsWorked)}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Total families benefited
+                  {t('home.totalFamilies')}
                 </p>
               </div>
               
@@ -194,7 +194,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                   {formatNumber(stateStats.aggregates.worksCompleted)}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {formatNumber(stateStats.aggregates.worksOngoing)} in progress
+                  {formatNumber(stateStats.aggregates.worksOngoing)} {t('home.inProgress')}
                 </p>
               </div>
               
@@ -211,7 +211,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                   {formatNumber(stateStats.aggregates.personDaysGenerated)}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {formatNumber(stateStats.aggregates.womenPersonDays)} by women
+                  {formatNumber(stateStats.aggregates.womenPersonDays)} {t('home.byWomen')}
                 </p>
               </div>
             </div>
@@ -224,10 +224,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
-              What We Offer
+              {t('home.whatWeOffer')}
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Our platform provides comprehensive tools and insights to understand MGNREGA implementation across Maharashtra
+              {t('home.whatWeOfferDesc')}
             </p>
           </div>
 
@@ -237,10 +237,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                 <BarChart3 className="h-8 w-8 text-brand" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">
-                Interactive Dashboards
+                {t('home.interactiveDashboards')}
               </h3>
               <p className="text-gray-600">
-                Visualize employment and expenditure data with interactive charts and graphs for all 34 districts
+                {t('home.interactiveDashboardsDesc')}
               </p>
             </div>
 
@@ -249,10 +249,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                 <FileText className="h-8 w-8 text-accent-purple" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">
-                Historical Analysis
+                {t('home.historicalAnalysis')}
               </h3>
               <p className="text-gray-600">
-                Access historical data and trends to understand program performance over time
+                {t('home.historicalAnalysisDesc')}
               </p>
             </div>
 
@@ -261,10 +261,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                 <Shield className="h-8 w-8 text-visuals-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">
-                Transparent Data
+                {t('home.transparentData')}
               </h3>
               <p className="text-gray-600">
-                All data sourced from official MGNREGA reports, ensuring accuracy and transparency
+                {t('home.transparentDataDesc')}
               </p>
             </div>
           </div>
@@ -327,7 +327,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Quick Links</h4>
+              <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">{t('home.quickLinks')}</h4>
               <ul className="space-y-3 text-sm">
                 <li>
                   <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">
@@ -354,7 +354,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 
             {/* Resources */}
             <div>
-              <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Resources</h4>
+              <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">{t('home.resources')}</h4>
               <ul className="space-y-3 text-sm">
                 <li>
                   <Link href="/faq" className="text-gray-600 hover:text-gray-900 transition-colors">
@@ -373,7 +373,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    Official MGNREGA Site
+                    {t('home.officialSite')}
                   </a>
                 </li>
               </ul>

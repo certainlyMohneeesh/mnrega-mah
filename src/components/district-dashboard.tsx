@@ -8,6 +8,7 @@ import { LineChart } from "@/components/charts/line-chart";
 import { BarChart } from "@/components/charts/bar-chart";
 import { PieChart } from "@/components/charts/pie-chart";
 import { formatIndianNumber, formatNumber, formatDate } from "@/lib/utils";
+import { useLanguage } from "@/contexts/language-context";
 
 interface District {
   id: string;
@@ -38,7 +39,9 @@ interface DistrictDashboardProps {
 }
 
 export function DistrictDashboard({ district }: DistrictDashboardProps) {
-  // Get latest metric
+  const { t } = useLanguage();
+  
+  // Get the latest metrics for key stats
   const latestMetric = district.metrics[0];
   
   // Prepare trend data (last 12 months)
@@ -76,7 +79,7 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
             className="inline-flex items-center gap-2 text-white hover:text-white/90 transition-colors mb-6 text-sm font-medium"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Districts</span>
+            <span>{t('district.backToDistricts')}</span>
           </Link>
           
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
@@ -85,7 +88,7 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
                 {district.name}
               </h1>
               <p className="mt-3 text-lg text-white font-medium">
-                District Code: {district.code} • {district.stateName}
+                {t('district.code')}: {district.code} • {district.stateName}
               </p>
             </div>
             
@@ -93,7 +96,7 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
               href={`/compare?d1=${district.id}`}
               className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-all border-2 border-white text-white hover:bg-white hover:text-gray-900 self-start"
             >
-              Compare District
+              {t('district.compareButton')}
             </Link>
           </div>
         </div>
@@ -102,33 +105,33 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 space-y-12">
         {/* Key Metrics */}
         <section>
-          <h2 className="text-3xl font-bold mb-8" style={{ color: '#252653' }}>Key Metrics</h2>
+          <h2 className="text-3xl font-bold mb-8" style={{ color: '#252653' }}>{t('district.keyMetrics')}</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
-              title="Total Expenditure"
+              title={t('district.totalExpenditure')}
               value={formatIndianNumber(latestMetric.totalExpenditure)}
               subtitle={`${latestMetric.month} ${latestMetric.finYear}`}
               icon={IndianRupee}
               className="bg-gradient-to-br from-green-50 to-emerald-50 border-l-4 border-green-500"
             />
             <StatCard
-              title="Households Worked"
+              title={t('district.householdsWorked')}
               value={formatNumber(latestMetric.totalHouseholdsWorked)}
-              subtitle="In current month"
+              subtitle={t('district.currentMonth')}
               icon={Users}
               className="bg-gradient-to-br from-blue-50 to-cyan-50 border-l-4 border-blue-500"
             />
             <StatCard
-              title="Works Completed"
+              title={t('district.worksCompleted')}
               value={formatNumber(latestMetric.numberOfCompletedWorks)}
-              subtitle="Finished projects"
+              subtitle={t('district.finishedProjects')}
               icon={Briefcase}
               className="bg-gradient-to-br from-purple-50 to-pink-50 border-l-4 border-accent-purple"
             />
             <StatCard
-              title="Ongoing Works"
+              title={t('district.ongoingWorks')}
               value={formatNumber(latestMetric.numberOfOngoingWorks)}
-              subtitle="In progress"
+              subtitle={t('district.inProgress')}
               icon={TrendingUp}
               className="bg-gradient-to-br from-orange-50 to-red-50 border-l-4 border-brand"
             />
@@ -139,16 +142,16 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
         <section>
           <Card className="border-t-4" style={{ borderTopColor: '#E76D67' }}>
             <CardHeader>
-              <CardTitle className="text-2xl" style={{ color: '#252653' }}>Expenditure Trend</CardTitle>
+              <CardTitle className="text-2xl" style={{ color: '#252653' }}>{t('district.expenditureTrend')}</CardTitle>
               <CardDescription className="text-base">
-                Monthly expenditure over the last 12 months (in Crores)
+                {t('district.expenditureTrendDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <LineChart
                 data={trendData}
                 lines={[
-                  { dataKey: "expenditure", stroke: "#E76D67", name: "Expenditure (Cr)" },
+                  { dataKey: "expenditure", stroke: "#E76D67", name: t('district.expenditureCr') },
                 ]}
                 xAxisKey="period"
                 height={350}
@@ -162,17 +165,17 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
           {/* Works Status */}
           <Card className="border-t-4" style={{ borderTopColor: '#10B981' }}>
             <CardHeader>
-              <CardTitle className="text-xl" style={{ color: '#252653' }}>Works Progress</CardTitle>
+              <CardTitle className="text-xl" style={{ color: '#252653' }}>{t('district.worksProgress')}</CardTitle>
               <CardDescription>
-                Completed vs Ongoing works over last 6 months
+                {t('district.worksProgressDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <BarChart
                 data={worksData}
                 bars={[
-                  { dataKey: "completed", fill: "#10B981", name: "Completed" },
-                  { dataKey: "ongoing", fill: "#F59E0B", name: "Ongoing" },
+                  { dataKey: "completed", fill: "#10B981", name: t('district.completed') },
+                  { dataKey: "ongoing", fill: "#F59E0B", name: t('district.ongoing') },
                 ]}
                 xAxisKey="period"
                 height={300}
@@ -183,9 +186,9 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
           {/* Demographics */}
           <Card className="border-t-4" style={{ borderTopColor: '#514E80' }}>
             <CardHeader>
-              <CardTitle className="text-xl" style={{ color: '#252653' }}>Person Days Distribution</CardTitle>
+              <CardTitle className="text-xl" style={{ color: '#252653' }}>{t('district.personDaysDist')}</CardTitle>
               <CardDescription>
-                Breakdown by category for {latestMetric.month} {latestMetric.finYear}
+                {t('district.personDaysDistDesc')} {latestMetric.month} {latestMetric.finYear}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -202,16 +205,16 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
         <section>
           <Card className="border-t-4" style={{ borderTopColor: '#3B82F6' }}>
             <CardHeader>
-              <CardTitle className="text-2xl" style={{ color: '#252653' }}>Employment Trend</CardTitle>
+              <CardTitle className="text-2xl" style={{ color: '#252653' }}>{t('district.employmentTrend')}</CardTitle>
               <CardDescription className="text-base">
-                Households worked over the last 12 months
+                {t('district.employmentTrendDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <LineChart
                 data={trendData}
                 lines={[
-                  { dataKey: "households", stroke: "#514E80", name: "Households" },
+                  { dataKey: "households", stroke: "#514E80", name: t('district.households') },
                 ]}
                 xAxisKey="period"
                 height={350}
@@ -224,9 +227,9 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
         <section>
           <Card className="border-t-4" style={{ borderTopColor: '#F59E0B' }}>
             <CardHeader>
-              <CardTitle className="text-2xl" style={{ color: '#252653' }}>Historical Data</CardTitle>
+              <CardTitle className="text-2xl" style={{ color: '#252653' }}>{t('district.historicalData')}</CardTitle>
               <CardDescription className="text-base">
-                Monthly metrics for the past year
+                {t('district.historicalDataDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -234,12 +237,12 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b-2" style={{ borderBottomColor: '#E76D67' }}>
-                      <th className="p-4 text-left font-bold text-gray-900 bg-gray-50">Period</th>
-                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Expenditure</th>
-                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Households</th>
-                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Completed</th>
-                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Ongoing</th>
-                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">Avg Wage/Day</th>
+                      <th className="p-4 text-left font-bold text-gray-900 bg-gray-50">{t('table.period')}</th>
+                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.expenditure')}</th>
+                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.households')}</th>
+                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.completed')}</th>
+                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.ongoing')}</th>
+                      <th className="p-4 text-right font-bold text-gray-900 bg-gray-50">{t('table.avgWage')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -249,7 +252,7 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
                           {metric.month} {metric.finYear}
                         </td>
                         <td className="p-4 text-right font-semibold text-green-600">
-                          ₹{formatIndianNumber(metric.totalExpenditure)}
+                          {formatIndianNumber(metric.totalExpenditure)}
                         </td>
                         <td className="p-4 text-right text-gray-700">
                           {formatNumber(metric.totalHouseholdsWorked)}
