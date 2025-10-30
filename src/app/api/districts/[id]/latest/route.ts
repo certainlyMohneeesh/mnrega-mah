@@ -27,16 +27,17 @@ export async function GET(
       });
     }
 
-    // Fetch district with latest metrics
+    // Fetch district
     const district = await prisma.district.findUnique({
       where: { id },
-      include: {
-        metrics: {
-          orderBy: {
-            dataDate: "desc",
-          },
-          take: 1,
-        },
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        stateCode: true,
+        stateName: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -50,18 +51,19 @@ export async function GET(
       );
     }
 
+    // Fetch latest metric
+    const latestMetric = await prisma.monthlyMetric.findFirst({
+      where: { districtId: id },
+      orderBy: [
+        { finYear: "desc" },
+        { createdAt: "desc" },
+      ],
+    });
+
     const response = {
-      district: {
-        id: district.id,
-        code: district.code,
-        name: district.name,
-        nameHi: district.nameHi,
-        nameMr: district.nameMr,
-        latitude: district.latitude,
-        longitude: district.longitude,
-      },
-      latestMetric: district.metrics[0] || null,
-      lastUpdated: district.metrics[0]?.fetchedAt || null,
+      district,
+      latestMetric: latestMetric || null,
+      lastUpdated: latestMetric?.updatedAt || null,
     };
 
     // Cache the response

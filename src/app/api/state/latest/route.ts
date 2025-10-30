@@ -24,67 +24,80 @@ export async function GET(request: NextRequest) {
 
     // Get all Maharashtra districts
     const districts = await prisma.district.findMany({
-      where: { stateCode: "MH" },
-      include: {
-        metrics: {
-          orderBy: { dataDate: "desc" },
-          take: 1,
-        },
-      },
+      where: { stateCode: "18" }, // Maharashtra
     });
 
-    // Aggregate metrics
-    let totalHouseholdsIssued = 0;
-    let totalHouseholdsEmployed = 0;
-    let totalPersonDays = BigInt(0);
-    let totalWomenPersonDays = BigInt(0);
-    let totalExpenditure = BigInt(0);
-    let totalWageExpenditure = BigInt(0);
+    // Fetch latest metrics for each district
+    const districtMetrics = await Promise.all(
+      districts.map(async (d) => {
+        const latestMetric = await prisma.monthlyMetric.findFirst({
+          where: { districtId: d.id },
+          orderBy: [{ finYear: "desc" }, { createdAt: "desc" }],
+        });
+        return { district: d, metric: latestMetric };
+      })
+    );
+
+    // Aggregate metrics based on actual CSV data structure
+    let totalExpenditure = 0;
+    let totalWages = 0;
     let totalWorksCompleted = 0;
     let totalWorksOngoing = 0;
+    let totalWorksTakenUp = 0;
+    let totalHouseholdsWorked = 0;
+    let totalIndividualsWorked = 0;
+    let totalPersonDays = 0;
+    let totalWomenPersonDays = 0;
+    let totalScPersonDays = 0;
+    let totalStPersonDays = 0;
     let districtsWithData = 0;
-    let latestDataDate: Date | null = null;
+    let latestUpdate: Date | null = null;
 
-    for (const district of districts) {
-      const metric = district.metrics[0];
+    for (const { metric } of districtMetrics) {
       if (metric) {
         districtsWithData++;
-        totalHouseholdsIssued += metric.householdsIssued || 0;
-        totalHouseholdsEmployed += metric.householdsEmployed || 0;
-        totalPersonDays += metric.personDaysGenerated || BigInt(0);
-        totalWomenPersonDays += metric.womenPersonDays || BigInt(0);
-        totalExpenditure += metric.totalExpenditure || BigInt(0);
-        totalWageExpenditure += metric.wageExpenditure || BigInt(0);
-        totalWorksCompleted += metric.worksCompleted || 0;
-        totalWorksOngoing += metric.worksOngoing || 0;
+        totalExpenditure += metric.totalExpenditure || 0;
+        totalWages += metric.wages || 0;
+        totalWorksCompleted += metric.numberOfCompletedWorks || 0;
+        totalWorksOngoing += metric.numberOfOngoingWorks || 0;
+        totalWorksTakenUp += metric.numberOfWorksTakenUp || 0;
+        totalHouseholdsWorked += metric.totalHouseholdsWorked || 0;
+        totalIndividualsWorked += metric.totalIndividualsWorked || 0;
+        totalPersonDays += metric.personDaysOfCentralLiability || 0;
+        totalWomenPersonDays += metric.womenPersonDays || 0;
+        totalScPersonDays += metric.scPersonDays || 0;
+        totalStPersonDays += metric.stPersonDays || 0;
 
-        if (!latestDataDate || metric.dataDate > latestDataDate) {
-          latestDataDate = metric.dataDate;
+        if (!latestUpdate || metric.updatedAt > latestUpdate) {
+          latestUpdate = metric.updatedAt;
         }
       }
     }
 
     const response = {
       state: {
-        code: "MH",
-        name: "Maharashtra",
+        code: "18",
+        name: "MAHARASHTRA",
       },
       aggregates: {
         totalDistricts: districts.length,
         districtsWithData,
-        householdsIssued: totalHouseholdsIssued,
-        householdsEmployed: totalHouseholdsEmployed,
-        personDaysGenerated: totalPersonDays.toString(),
-        womenPersonDays: totalWomenPersonDays.toString(),
-        totalExpenditure: totalExpenditure.toString(),
-        wageExpenditure: totalWageExpenditure.toString(),
+        totalExpenditure: Math.round(totalExpenditure * 100) / 100, // Lakhs
+        totalWages: Math.round(totalWages * 100) / 100, // Lakhs
         worksCompleted: totalWorksCompleted,
         worksOngoing: totalWorksOngoing,
-        avgPersonDaysPerDistrict: districtsWithData > 0 
-          ? Number(totalPersonDays) / districtsWithData 
+        worksTakenUp: totalWorksTakenUp,
+        householdsWorked: totalHouseholdsWorked,
+        individualsWorked: totalIndividualsWorked,
+        personDaysGenerated: Math.round(totalPersonDays * 100) / 100,
+        womenPersonDays: Math.round(totalWomenPersonDays * 100) / 100,
+        scPersonDays: Math.round(totalScPersonDays * 100) / 100,
+        stPersonDays: Math.round(totalStPersonDays * 100) / 100,
+        avgExpenditurePerDistrict: districtsWithData > 0 
+          ? Math.round((totalExpenditure / districtsWithData) * 100) / 100
           : 0,
       },
-      lastUpdated: latestDataDate,
+      lastUpdated: latestUpdate,
     };
 
     // Cache the response

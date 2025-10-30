@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import withPWA from "next-pwa";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
@@ -9,7 +8,12 @@ const nextConfig: NextConfig = {
   
   // Image optimization
   images: {
-    domains: ["api.data.gov.in"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.data.gov.in",
+      },
+    ],
     formats: ["image/avif", "image/webp"],
   },
 
@@ -77,32 +81,7 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-
-  // Output configuration
-  output: "standalone",
 };
 
-// Wrap with PWA
-const configWithPWA = withPWA({
-  dest: "public",
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === "development",
-  runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/api\.data\.gov\.in\/.*/i,
-      handler: "NetworkFirst",
-      options: {
-        cacheName: "api-cache",
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60, // 24 hours
-        },
-        networkTimeoutSeconds: 10,
-      },
-    },
-  ],
-})(nextConfig);
-
 // Wrap with next-intl
-export default withNextIntl(configWithPWA);
+export default withNextIntl(nextConfig);

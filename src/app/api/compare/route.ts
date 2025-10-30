@@ -43,11 +43,11 @@ export async function GET(request: NextRequest) {
     const [district1, district2] = await Promise.all([
       prisma.district.findUnique({
         where: { id: d1 },
-        select: { id: true, code: true, name: true, nameHi: true, nameMr: true },
+        select: { id: true, code: true, name: true, stateCode: true, stateName: true },
       }),
       prisma.district.findUnique({
         where: { id: d2 },
-        select: { id: true, code: true, name: true, nameHi: true, nameMr: true },
+        select: { id: true, code: true, name: true, stateCode: true, stateName: true },
       }),
     ]);
 
@@ -65,12 +65,12 @@ export async function GET(request: NextRequest) {
     const [metrics1, metrics2] = await Promise.all([
       prisma.monthlyMetric.findMany({
         where: { districtId: d1 },
-        orderBy: [{ year: "desc" }, { month: "desc" }],
+        orderBy: [{ finYear: "desc" }, { createdAt: "desc" }],
         take: Math.min(period, 24),
       }),
       prisma.monthlyMetric.findMany({
         where: { districtId: d2 },
-        orderBy: [{ year: "desc" }, { month: "desc" }],
+        orderBy: [{ finYear: "desc" }, { createdAt: "desc" }],
         take: Math.min(period, 24),
       }),
     ]);

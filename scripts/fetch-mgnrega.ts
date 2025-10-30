@@ -327,51 +327,12 @@ async function processRecord(record: MGNREGARecord): Promise<void> {
   const month = record.month ? parseMonth(record.month) : 1;
 
   // Create data date
-  const dataDate = new Date(year, month - 1, 1);
-
-  // Upsert monthly metric
-  await prisma.monthlyMetric.upsert({
-    where: {
-      districtId_year_month: {
-        districtId: district.id,
-        year,
-        month,
-      },
-    },
-    update: {
-      householdsIssued: parseNumber(record.households_issued),
-      householdsEmployed: parseNumber(record.households_employed),
-      personDaysGenerated: parseBigInt(record.persondays_generated),
-      womenPersonDays: parseBigInt(record.women_persondays),
-      scPersonDays: parseBigInt(record.sc_persondays),
-      stPersonDays: parseBigInt(record.st_persondays),
-      totalExpenditure: parseBigInt(record.total_expenditure),
-      wageExpenditure: parseBigInt(record.wage_expenditure),
-      materialExpenditure: parseBigInt(record.material_expenditure),
-      worksCompleted: parseNumber(record.works_completed),
-      worksOngoing: parseNumber(record.works_ongoing),
-      dataDate,
-      fetchedAt: new Date(),
-    },
-    create: {
-      districtId: district.id,
-      year,
-      month,
-      householdsIssued: parseNumber(record.households_issued),
-      householdsEmployed: parseNumber(record.households_employed),
-      personDaysGenerated: parseBigInt(record.persondays_generated),
-      womenPersonDays: parseBigInt(record.women_persondays),
-      scPersonDays: parseBigInt(record.sc_persondays),
-      stPersonDays: parseBigInt(record.st_persondays),
-      totalExpenditure: parseBigInt(record.total_expenditure),
-      wageExpenditure: parseBigInt(record.wage_expenditure),
-      materialExpenditure: parseBigInt(record.material_expenditure),
-      worksCompleted: parseNumber(record.works_completed),
-      worksOngoing: parseNumber(record.works_ongoing),
-      dataDate,
-      fetchedAt: new Date(),
-    },
-  });
+  // Note: This script is deprecated - use seed-csv.ts instead
+  // The schema has changed to match CSV structure with finYear/month as strings
+  // This would need to be updated to match the current schema structure
+  
+  console.warn("⚠️  This script is deprecated. Use seed-csv.ts for importing data.");
+  throw new Error("This script is not compatible with the current schema. Use seed-csv.ts instead.");
 }
 
 /**

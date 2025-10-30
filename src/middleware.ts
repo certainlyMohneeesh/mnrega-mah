@@ -1,5 +1,5 @@
 import createMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "./i18n";
+import { locales, defaultLocale } from "./i18n/request";
 
 export default createMiddleware({
   // A list of all locales that are supported
@@ -16,6 +16,11 @@ export default createMiddleware({
 });
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ["/", "/(mr|hi|en)/:path*", "/((?!_next|_vercel|.*\\..*).*)"],
+  // Match only internationalized pathnames, exclude API routes, static files, and Next.js internals
+  matcher: [
+    // Match all pathnames except for
+    // - … if they start with `/api`, `/_next` or `/_vercel`
+    // - … the ones containing a dot (e.g. `favicon.ico`)
+    "/((?!api|_next|_vercel|.*\\..*).*)",
+  ],
 };

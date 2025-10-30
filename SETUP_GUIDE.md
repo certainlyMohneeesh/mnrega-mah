@@ -88,7 +88,6 @@ REDIS_URL="redis://localhost:6379"
 REDIS_PASSWORD=""
 
 # Data.gov.in API (Already provided)
-DATA_GOV_API_KEY="579b464db66ec23bdd0000011b14954939de4eed5265d7c08c0b8631"
 DATA_GOV_API_URL="https://api.data.gov.in/resource/ee03643a-ee4c-48c2-ac30-9f2ff26ab722"
 
 # Sentry (Optional - for error tracking)

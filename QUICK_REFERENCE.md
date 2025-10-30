@@ -108,7 +108,6 @@ curl http://localhost:3000/api/state/latest
 DATABASE_URL="postgresql://user:password@host:port/database"
 DIRECT_URL="postgresql://user:password@host:port/database"
 REDIS_URL="redis://localhost:6379"
-DATA_GOV_API_KEY="579b464db66ec23bdd0000011b14954939de4eed5265d7c08c0b8631"
 NODE_ENV="development"
 ```
 

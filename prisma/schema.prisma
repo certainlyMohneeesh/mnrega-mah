@@ -1,88 +1,89 @@
-// This is your Prisma schema file
-// Learn more: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 // District master data for Maharashtra
 model District {
-  id        String   @id @default(cuid())
-  code      String   @unique // District code from data.gov.in
-  name      String   // District name in English
-  nameHi    String?  // District name in Hindi
-  nameMr    String?  // District name in Marathi
-  stateCode String   @default("MH")
-  stateName String   @default("Maharashtra")
-  latitude  Float?
-  longitude Float?
-  population Int?
-  area      Float?   // in sq km
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
+  id        String          @id @default(cuid())
+  code      String          @unique // e.g., "1810" from CSV district_code
+  name      String          // District name from CSV
+  stateCode String          @default("18") // Maharashtra state code
+  stateName String          @default("Maharashtra")
   metrics   MonthlyMetric[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 
-  @@index([code])
   @@index([stateCode])
+  @@index([code])
   @@map("districts")
 }
 
-// Monthly performance metrics for each district
+// Monthly performance metrics for each district (from CSV data)
 model MonthlyMetric {
-  id                    String   @id @default(cuid())
-  districtId            String
-  year                  Int
-  month                 Int      // 1-12
+  id         String   @id @default(cuid())
+  districtId String
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
   
-  // Work demand and provision
-  householdsIssued      Int?     // Households issued job cards
-  householdsEmployed    Int?     // Households provided employment
-  personDaysGenerated   BigInt?  // Total person-days of employment
-  womenPersonDays       BigInt?  // Person-days for women
-  scPersonDays          BigInt?  // Person-days for SC
-  stPersonDays          BigInt?  // Person-days for ST
+  // Time identifiers
+  finYear String // e.g., "2024-2025"
+  month   String // e.g., "Dec", "Nov", "July", "April"
   
-  // Financial metrics (in INR)
-  availableFunds        BigInt?  // Available funds
-  totalExpenditure      BigInt?  // Total expenditure
-  wageExpenditure       BigInt?  // Wages paid
-  materialExpenditure   BigInt?  // Material expenditure
+  // Budget & Employment
+  approvedLabourBudget                  Float?
+  averageWageRatePerDay                 Float?
+  averageDaysOfEmploymentPerHousehold   Float?
+  differentlyAbledPersonsWorked         Int?
   
-  // Works and completion
-  worksCompleted        Int?     // Number of works completed
-  worksOngoing          Int?     // Number of ongoing works
+  // Expenditure (in Lakhs INR)
+  materialAndSkilledWages        Float?
+  totalExpenditure               Float?
+  wages                          Float?
+  totalAdministrativeExpenditure Float?
   
-  // Average days and payments
-  avgDaysPerHousehold   Float?   // Average days provided per household
-  avgWageRate           Float?   // Average wage rate per day
+  // Works
+  numberOfCompletedWorks Int?
+  numberOfOngoingWorks   Int?
+  numberOfWorksTakenUp   Int?
+  numberOfGPsWithNilExp  Int?
   
-  // Compliance metrics
-  paymentWithin15Days   Int?     // Payments made within 15 days (%)
-  demandRegistered      Int?     // Demand for work registered
-  demandProvided        Int?     // Demand for work provided
+  // Person Days
+  personDaysOfCentralLiability Float?
+  scPersonDays                 Float?
+  stPersonDays                 Float?
+  womenPersonDays              Float?
   
-  // Timestamps
-  dataDate              DateTime // The month/year this data represents
-  fetchedAt             DateTime @default(now())
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  // Households & Workers
+  totalHouseholdsWorked            Int?
+  totalIndividualsWorked           Int?
+  totalNumberOfActiveJobCards      Int?
+  totalNumberOfActiveWorkers       Int?
+  totalNumberOfHHsCompleted100Days Int?
+  totalNumberOfJobCardsIssued      Int?
+  totalNumberOfWorkers             Int?
+  scWorkersAgainstActiveWorkers    Float?
+  stWorkersAgainstActiveWorkers    Float?
+  
+  // Percentages & Performance
+  percentOfCategoryBWorks                  Float?
+  percentOfExpenditureOnAgricultureAllied  Float?
+  percentOfNRMExpenditure                  Float?
+  percentagePaymentsGeneratedWithin15Days  Float?
+  
+  // Metadata
+  remarks   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations
-  district              District @relation(fields: [districtId], references: [id], onDelete: Cascade)
-
-  @@unique([districtId, year, month])
-  @@index([districtId, year, month])
-  @@index([dataDate])
-  @@index([year, month])
+  @@unique([districtId, finYear, month])
+  @@index([districtId])
+  @@index([finYear])
+  @@index([month])
   @@map("monthly_metrics")
 }
 

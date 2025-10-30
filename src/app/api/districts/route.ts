@@ -28,36 +28,37 @@ export async function GET(request: NextRequest) {
     // Fetch from database
     const districts = await prisma.district.findMany({
       where: {
-        stateCode: "MH",
+        stateCode: "18", // Maharashtra state code
       },
       orderBy: {
         name: "asc",
       },
-      ...(includeStats && {
-        include: {
-          metrics: {
-            orderBy: {
-              dataDate: "desc",
-            },
-            take: 1,
-          },
-        },
-      }),
     });
 
-    // Transform data if stats are included
-    const response = includeStats
-      ? districts.map((d: any) => ({
-          id: d.id,
-          code: d.code,
-          name: d.name,
-          nameHi: d.nameHi,
-          nameMr: d.nameMr,
-          latitude: d.latitude,
-          longitude: d.longitude,
-          latestMetric: d.metrics[0] || null,
-        }))
-      : districts;
+    // If stats are requested, fetch latest metrics for each district
+    let response;
+    if (includeStats) {
+      const districtsWithStats = await Promise.all(
+        districts.map(async (d) => {
+          const latestMetric = await prisma.monthlyMetric.findFirst({
+            where: { districtId: d.id },
+            orderBy: [{ finYear: "desc" }, { createdAt: "desc" }],
+          });
+          return {
+            ...d,
+            latestMetric: latestMetric || null,
+            _count: {
+              metrics: await prisma.monthlyMetric.count({
+                where: { districtId: d.id },
+              }),
+            },
+          };
+        })
+      );
+      response = districtsWithStats;
+    } else {
+      response = districts;
+    }
 
     // Cache the response
     await setCached(cacheKey, response, CacheTTL.DISTRICT_LIST);

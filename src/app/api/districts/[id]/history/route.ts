@@ -23,7 +23,7 @@ export async function GET(
     // Validate district exists
     const district = await prisma.district.findUnique({
       where: { id },
-      select: { id: true, code: true, name: true, nameHi: true, nameMr: true },
+      select: { id: true, code: true, name: true, stateCode: true, stateName: true },
     });
 
     if (!district) {
@@ -48,37 +48,24 @@ export async function GET(
       });
     }
 
-    // Build date filters
-    const dateFilters: any = {};
+    // Build filters for finYear
+    const finYearFilters: any = {};
     if (from) {
-      const [fromYear, fromMonth] = from.split("-").map(Number);
-      dateFilters.OR = [
-        { year: { gt: fromYear } },
-        { AND: [{ year: fromYear }, { month: { gte: fromMonth } }] },
-      ];
+      finYearFilters.finYear = { gte: from };
     }
     if (to) {
-      const [toYear, toMonth] = to.split("-").map(Number);
-      if (!dateFilters.OR) {
-        dateFilters.OR = [];
-      }
-      dateFilters.AND = [
-        {
-          OR: [
-            { year: { lt: toYear } },
-            { AND: [{ year: toYear }, { month: { lte: toMonth } }] },
-          ],
-        },
-      ];
+      finYearFilters.finYear = finYearFilters.finYear 
+        ? { ...finYearFilters.finYear, lte: to }
+        : { lte: to };
     }
 
     // Fetch historical metrics
     const metrics = await prisma.monthlyMetric.findMany({
       where: {
         districtId: id,
-        ...dateFilters,
+        ...finYearFilters,
       },
-      orderBy: [{ year: "desc" }, { month: "desc" }],
+      orderBy: [{ finYear: "desc" }, { createdAt: "desc" }],
       take: Math.min(limit, 100), // Cap at 100 records
     });
 
