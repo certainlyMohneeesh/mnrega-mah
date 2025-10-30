@@ -1,0 +1,125 @@
+{
+  "common": {
+    "appName": "हमारी आवाज, हमारे अधिकार",
+    "appTagline": "महाराष्ट्र में मनरेगा प्रदर्शन को ट्रैक करें",
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "retry": "पुनः प्रयास करें",
+    "close": "बंद करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "sort": "क्रमबद्ध करें",
+    "export": "निर्यात करें",
+    "share": "साझा करें",
+    "back": "वापस",
+    "next": "अगला",
+    "previous": "पिछला",
+    "home": "होम",
+    "settings": "सेटिंग्स"
+  },
+  "nav": {
+    "home": "होम",
+    "districts": "जिले",
+    "compare": "तुलना करें",
+    "about": "के बारे में",
+    "settings": "सेटिंग्स",
+    "language": "भाषा"
+  },
+  "home": {
+    "title": "महाराष्ट्र मनरेगा डैशबोर्ड",
+    "subtitle": "सभी जिलों में रोजगार और विकास को ट्रैक करें",
+    "selectDistrict": "एक जिला चुनें",
+    "viewStateData": "राज्य अवलोकन देखें",
+    "lastUpdated": "अंतिम अपडेट",
+    "dataUnavailable": "डेटा अस्थायी रूप से अनुपलब्ध है। {date} को अंतिम अपडेट दिखाया जा रहा है।",
+    "noData": "कोई डेटा उपलब्ध नहीं"
+  },
+  "district": {
+    "title": "जिला डैशबोर्ड",
+    "selectDistrict": "जिला चुनें",
+    "performance": "प्रदर्शन अवलोकन",
+    "trends": "प्रदर्शन रुझान",
+    "compareWith": "किसी अन्य जिले से तुलना करें",
+    "noDataForDistrict": "चयनित जिले के लिए कोई डेटा उपलब्ध नहीं",
+    "viewHistory": "ऐतिहासिक डेटा देखें",
+    "listen": "सारांश सुनें"
+  },
+  "metrics": {
+    "householdsIssued": "जॉब कार्ड जारी परिवार",
+    "householdsEmployed": "नियोजित परिवार",
+    "personDaysGenerated": "व्यक्ति-दिवस उत्पन्न",
+    "womenPersonDays": "महिला व्यक्ति-दिवस",
+    "scPersonDays": "अनुसूचित जाति व्यक्ति-दिवस",
+    "stPersonDays": "अनुसूचित जनजाति व्यक्ति-दिवस",
+    "totalExpenditure": "कुल व्यय",
+    "wageExpenditure": "मजदूरी व्यय",
+    "materialExpenditure": "सामग्री व्यय",
+    "worksCompleted": "पूर्ण कार्य",
+    "worksOngoing": "चल रहे कार्य",
+    "avgDaysPerHousehold": "प्रति परिवार औसत दिन",
+    "avgWageRate": "औसत मजदूरी दर",
+    "paymentCompliance": "15 दिनों में भुगतान"
+  },
+  "compare": {
+    "title": "जिलों की तुलना करें",
+    "selectFirst": "पहला जिला चुनें",
+    "selectSecond": "दूसरा जिला चुनें",
+    "selectMetric": "तुलना करने के लिए मेट्रिक चुनें",
+    "comparing": "{district1} बनाम {district2} की तुलना",
+    "latest": "नवीनतम",
+    "average": "औसत ({period} महीने)",
+    "difference": "अंतर",
+    "percentDifference": "प्रतिशत अंतर",
+    "noComparison": "तुलना के लिए दो जिले चुनें"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "भाषा",
+    "selectLanguage": "अपनी पसंदीदा भाषा चुनें",
+    "marathi": "मराठी",
+    "hindi": "हिंदी",
+    "english": "English",
+    "audio": "ऑडियो",
+    "enableAudio": "ऑडियो सारांश सक्षम करें",
+    "offline": "ऑफ़लाइन मोड",
+    "enableOffline": "ऑफ़लाइन कैशिंग सक्षम करें",
+    "cacheSize": "कैश आकार",
+    "clearCache": "कैश साफ़ करें",
+    "notifications": "सूचनाएं",
+    "enableNotifications": "सूचनाएं सक्षम करें",
+    "preferredDistrict": "पसंदीदा जिला"
+  },
+  "errors": {
+    "generic": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+    "networkError": "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।",
+    "dataUnavailable": "डेटा अस्थायी रूप से अनुपलब्ध है। {date} को अंतिम अपडेट दिखाया जा रहा है।",
+    "districtNotFound": "जिला नहीं मिला।",
+    "noDataAvailable": "इस अवधि के लिए कोई डेटा उपलब्ध नहीं।",
+    "apiError": "सर्वर से डेटा प्राप्त करने में विफल।",
+    "cacheError": "कैश्ड डेटा तक पहुंचने में विफल।",
+    "offlineMode": "आप ऑफ़लाइन हैं। कैश्ड डेटा दिखाया जा रहा है।"
+  },
+  "offline": {
+    "title": "ऑफ़लाइन मोड",
+    "message": "आप वर्तमान में ऑफ़लाइन हैं। कैश्ड डेटा देख रहे हैं।",
+    "lastSync": "अंतिम समन्वयन: {date}",
+    "syncNow": "अब समन्वयित करें",
+    "cacheCleared": "कैश सफलतापूर्वक साफ़ किया गया"
+  },
+  "audio": {
+    "play": "सारांश चलाएं",
+    "pause": "रोकें",
+    "stop": "बंद करें",
+    "loading": "ऑडियो लोड हो रहा है...",
+    "notSupported": "आपके ब्राउज़र में ऑडियो समर्थित नहीं है"
+  },
+  "accessibility": {
+    "menu": "मेनू",
+    "skipToContent": "मुख्य सामग्री पर जाएं",
+    "languageSelector": "भाषा चयनकर्ता",
+    "districtSelector": "जिला चयनकर्ता",
+    "chartDescription": "समय के साथ {metric} दिखाने वाला चार्ट"
+  }
+}

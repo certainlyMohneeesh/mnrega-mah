@@ -1,0 +1,125 @@
+{
+  "common": {
+    "appName": "Our Voice, Our Rights",
+    "appTagline": "Track MGNREGA performance across Maharashtra",
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "share": "Share",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "home": "Home",
+    "settings": "Settings"
+  },
+  "nav": {
+    "home": "Home",
+    "districts": "Districts",
+    "compare": "Compare",
+    "about": "About",
+    "settings": "Settings",
+    "language": "Language"
+  },
+  "home": {
+    "title": "Maharashtra MGNREGA Dashboard",
+    "subtitle": "Track employment and development across all districts",
+    "selectDistrict": "Select a District",
+    "viewStateData": "View State Overview",
+    "lastUpdated": "Last updated",
+    "dataUnavailable": "Data temporarily unavailable. Showing last updated on {date}.",
+    "noData": "No data available"
+  },
+  "district": {
+    "title": "District Dashboard",
+    "selectDistrict": "Select District",
+    "performance": "Performance Overview",
+    "trends": "Performance Trends",
+    "compareWith": "Compare with another district",
+    "noDataForDistrict": "No data available for selected district",
+    "viewHistory": "View Historical Data",
+    "listen": "Listen to Summary"
+  },
+  "metrics": {
+    "householdsIssued": "Households Issued Job Cards",
+    "householdsEmployed": "Households Employed",
+    "personDaysGenerated": "Person-Days Generated",
+    "womenPersonDays": "Women Person-Days",
+    "scPersonDays": "SC Person-Days",
+    "stPersonDays": "ST Person-Days",
+    "totalExpenditure": "Total Expenditure",
+    "wageExpenditure": "Wage Expenditure",
+    "materialExpenditure": "Material Expenditure",
+    "worksCompleted": "Works Completed",
+    "worksOngoing": "Ongoing Works",
+    "avgDaysPerHousehold": "Avg Days per Household",
+    "avgWageRate": "Avg Wage Rate",
+    "paymentCompliance": "Payment within 15 days"
+  },
+  "compare": {
+    "title": "Compare Districts",
+    "selectFirst": "Select first district",
+    "selectSecond": "Select second district",
+    "selectMetric": "Select metric to compare",
+    "comparing": "Comparing {district1} vs {district2}",
+    "latest": "Latest",
+    "average": "Average ({period} months)",
+    "difference": "Difference",
+    "percentDifference": "Percent Difference",
+    "noComparison": "Select two districts to compare"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "selectLanguage": "Select your preferred language",
+    "marathi": "मराठी (Marathi)",
+    "hindi": "हिंदी (Hindi)",
+    "english": "English",
+    "audio": "Audio",
+    "enableAudio": "Enable audio summaries",
+    "offline": "Offline Mode",
+    "enableOffline": "Enable offline caching",
+    "cacheSize": "Cache Size",
+    "clearCache": "Clear Cache",
+    "notifications": "Notifications",
+    "enableNotifications": "Enable notifications",
+    "preferredDistrict": "Preferred District"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "networkError": "Network error. Please check your connection.",
+    "dataUnavailable": "Data temporarily unavailable. Showing last updated on {date}.",
+    "districtNotFound": "District not found.",
+    "noDataAvailable": "No data available for this period.",
+    "apiError": "Failed to fetch data from server.",
+    "cacheError": "Failed to access cached data.",
+    "offlineMode": "You are offline. Showing cached data."
+  },
+  "offline": {
+    "title": "Offline Mode",
+    "message": "You are currently offline. Viewing cached data.",
+    "lastSync": "Last synced: {date}",
+    "syncNow": "Sync Now",
+    "cacheCleared": "Cache cleared successfully"
+  },
+  "audio": {
+    "play": "Play Summary",
+    "pause": "Pause",
+    "stop": "Stop",
+    "loading": "Loading audio...",
+    "notSupported": "Audio not supported in your browser"
+  },
+  "accessibility": {
+    "menu": "Menu",
+    "skipToContent": "Skip to main content",
+    "languageSelector": "Language selector",
+    "districtSelector": "District selector",
+    "chartDescription": "Chart showing {metric} over time"
+  }
+}
