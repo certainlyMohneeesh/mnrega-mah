@@ -12,7 +12,10 @@ async function getDistrictsData(d1?: string, d2?: string) {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    // Use Vercel URL in production, localhost in development
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
     const promises = [];
 
     if (d1) {
