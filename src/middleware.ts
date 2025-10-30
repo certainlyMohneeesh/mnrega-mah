@@ -1,26 +1,23 @@
-import createMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "./i18n/request";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default createMiddleware({
-  // A list of all locales that are supported
-  locales,
-
-  // Used when no locale matches
-  defaultLocale,
-
-  // Automatically detect locale from browser
-  localeDetection: true,
-
-  // Prefix strategy
-  localePrefix: "as-needed",
-});
+// Simple middleware that doesn't interfere with routing
+// i18n will be handled at the component level for now
+export function middleware(request: NextRequest) {
+  // Allow all requests to pass through
+  return NextResponse.next();
+}
 
 export const config = {
-  // Match only internationalized pathnames, exclude API routes, static files, and Next.js internals
+  // Only match non-API routes
   matcher: [
-    // Match all pathnames except for
-    // - … if they start with `/api`, `/_next` or `/_vercel`
-    // - … the ones containing a dot (e.g. `favicon.ico`)
-    "/((?!api|_next|_vercel|.*\\..*).*)",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
