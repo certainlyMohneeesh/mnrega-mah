@@ -13,8 +13,8 @@ async function getDistrictsData(d1?: string, d2?: string) {
   }
 
   try {
-    console.log('🔍 Fetching compare districts directly from database');
     const districtIds = [d1, d2].filter(Boolean) as string[];
+    console.log('🔍 Fetching compare districts:', districtIds);
     
     // Fetch districts directly from database
     const districts = await prisma.district.findMany({
@@ -30,6 +30,12 @@ async function getDistrictsData(d1?: string, d2?: string) {
         }
       }
     });
+    
+    console.log(`✅ Query returned ${districts.length} districts:`, districts.map(d => ({ id: d.id, name: d.name })));
+
+    if (districts.length === 0) {
+      console.log('⚠️ No districts found for IDs:', districtIds);
+    }
 
     // Transform data to match component interface
     const transformedDistricts = districts.map(district => ({

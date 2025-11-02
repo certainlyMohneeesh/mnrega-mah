@@ -10,10 +10,22 @@ interface PageProps {
 
 async function getDistrictData(id: string) {
   try {
-    console.log('🔍 Fetching district directly from database:', id);
+    console.log('🔍 Fetching district by ID:', id);
+    
+    // First check if district exists
+    const districtExists = await prisma.district.findFirst({
+      where: { id },
+      select: { id: true, name: true }
+    });
+    
+    if (!districtExists) {
+      console.log('❌ District not found in database:', id);
+      return null;
+    }
+    
+    console.log('✅ District exists:', districtExists.name);
     
     // Fetch district details with all metrics directly from database
-    // This works better in server components - no need for HTTP calls
     const district = await prisma.district.findUnique({
       where: { id },
       include: {
@@ -27,11 +39,11 @@ async function getDistrictData(id: string) {
     });
 
     if (!district) {
-      console.log('❌ District not found:', id);
+      console.log('❌ Failed to fetch district details:', id);
       return null;
     }
 
-    console.log('✅ Found district:', district.name, 'with', district.metrics.length, 'metrics');
+    console.log('✅ Loaded district with', district.metrics.length, 'metrics');
     
     // Transform data to match component interface
     return {
