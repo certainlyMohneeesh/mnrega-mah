@@ -15,7 +15,7 @@ import prisma from "@/lib/prisma";
 import { invalidateDistrictCaches } from "@/lib/redis";
 import { getSyncConfiguration } from "@/lib/financial-year";
 
-export const maxDuration = 600; // 10 minutes timeout
+export const maxDuration = 300; // 5 minutes (Vercel free tier limit)
 export const dynamic = "force-dynamic";
 
 const CRON_SECRET = process.env.CRON_SECRET || "";
