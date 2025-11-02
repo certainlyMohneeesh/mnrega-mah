@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCached, setCached, CacheKeys, CacheTTL } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -36,18 +35,6 @@ export async function GET(
       );
     }
 
-    // Try to get from cache
-    const cacheKey = CacheKeys.DISTRICT_HISTORY(id, from || undefined, to || undefined);
-    const cached = await getCached<any>(cacheKey);
-
-    if (cached) {
-      return NextResponse.json({
-        success: true,
-        data: cached,
-        cached: true,
-      });
-    }
-
     // Build filters for finYear
     const finYearFilters: any = {};
     if (from) {
@@ -76,13 +63,9 @@ export async function GET(
       filters: { from, to, limit },
     };
 
-    // Cache the response
-    await setCached(cacheKey, response, CacheTTL.HISTORY_METRICS);
-
     return NextResponse.json({
       success: true,
       data: response,
-      cached: false,
     });
   } catch (error) {
     console.error("❌ Error fetching district history:", error);

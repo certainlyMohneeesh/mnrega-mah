@@ -12,7 +12,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { invalidateDistrictCaches } from "@/lib/redis";
 import { getSyncConfiguration } from "@/lib/financial-year";
 
 export const maxDuration = 300; // 5 minutes (Vercel free tier limit)
@@ -280,10 +279,6 @@ export async function GET(request: NextRequest) {
 
       console.log(`  ✓ Processed: ${totalDistricts} districts, ${totalMetrics} metrics so far`);
     }
-
-    // Invalidate Redis cache
-    console.log("🗑️  Invalidating Redis cache...");
-    await invalidateDistrictCaches();
 
     const duration = Math.round((Date.now() - startTime) / 1000);
 

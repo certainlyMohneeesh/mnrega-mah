@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCached, setCached, CacheKeys, CacheTTL } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -14,18 +13,6 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-
-    // Try to get from cache
-    const cacheKey = CacheKeys.DISTRICT_LATEST(id);
-    const cached = await getCached<any>(cacheKey);
-
-    if (cached) {
-      return NextResponse.json({
-        success: true,
-        data: cached,
-        cached: true,
-      });
-    }
 
     // Fetch district
     const district = await prisma.district.findUnique({
@@ -66,13 +53,9 @@ export async function GET(
       lastUpdated: latestMetric?.updatedAt || null,
     };
 
-    // Cache the response
-    await setCached(cacheKey, response, CacheTTL.LATEST_METRICS);
-
     return NextResponse.json({
       success: true,
       data: response,
-      cached: false,
     });
   } catch (error) {
     console.error("❌ Error fetching latest metrics:", error);

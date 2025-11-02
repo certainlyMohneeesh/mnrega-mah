@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCached, setCached, CacheKeys, CacheTTL } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -12,25 +11,6 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const includeStats = searchParams.get("includeStats") === "true";
-
-    // Try to get from cache
-    const cacheKey = includeStats ? `${CacheKeys.DISTRICT_LIST}:stats` : CacheKeys.DISTRICT_LIST;
-    const cached = await getCached<any[]>(cacheKey);
-
-    if (cached) {
-      return NextResponse.json(
-        {
-          success: true,
-          data: cached,
-          cached: true,
-        },
-        {
-          headers: {
-            'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-          },
-        }
-      );
-    }
 
     // Fetch only districts that have metrics - more efficient single query
     const districts = await prisma.district.findMany({
@@ -72,14 +52,10 @@ export async function GET(request: NextRequest) {
       response = districts;
     }
 
-    // Cache the response
-    await setCached(cacheKey, response, CacheTTL.DISTRICT_LIST);
-
     return NextResponse.json(
       {
         success: true,
         data: response,
-        cached: false,
       },
       {
         headers: {
