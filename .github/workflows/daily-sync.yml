@@ -14,15 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Trigger Daily Sync API
+      - name: Trigger Optimized Daily Sync API
         run: |
-          echo "🔄 Starting daily MGNREGA data sync..."
+          echo "🔄 Starting optimized daily MGNREGA data sync..."
+          echo "📊 Syncing previous + current financial year for all 34 states"
           
           response=$(curl -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
             -w "\nHTTP_STATUS:%{http_code}" \
-            "${{ secrets.VERCEL_DEPLOYMENT_URL }}/api/cron/daily-sync")
+            "${{ secrets.VERCEL_DEPLOYMENT_URL }}/api/cron/daily-sync-optimized")
           
           http_status=$(echo "$response" | grep "HTTP_STATUS" | cut -d: -f2)
           body=$(echo "$response" | sed '/HTTP_STATUS/d')
@@ -35,7 +36,7 @@ jobs:
             exit 1
           fi
           
-          echo "✅ Sync completed successfully"
+          echo "✅ Optimized sync completed successfully"
 
       - name: Send notification on failure
         if: failure()
