@@ -136,7 +136,6 @@ pnpm test:coverage     # Coverage report
 DATABASE_URL=<supabase-connection-string>
 DIRECT_URL=<supabase-direct-connection>
 REDIS_URL=<redis-connection-string>
-DATA_GOV_API_KEY=579b464db66ec23bdd0000011b14954939de4eed5265d7c08c0b8631
 SENTRY_DSN=<your-sentry-dsn>
 CRON_SECRET=<random-secret>
 NODE_ENV=production
