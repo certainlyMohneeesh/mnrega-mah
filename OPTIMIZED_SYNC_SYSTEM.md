@@ -168,12 +168,8 @@ DATABASE_URL="postgresql://..."
 DIRECT_URL="postgresql://..."
 REDIS_URL="redis://..."
 
-# Required for data sync
-DATA_GOV_API_KEY="579b464db66ec23bdd0000011b14954939de4eed5265d7c08c0b8631"
-CRON_SECRET="22Cmyth0315"
-```
 
-### Step 2: Apply Database Migration
+### Step 1: Apply Database Migration
 
 ```bash
 cd mgnrega
@@ -185,14 +181,14 @@ npx prisma generate
 npx prisma db push
 ```
 
-### Step 3: Verify Schema
+### Step 2: Verify Schema
 
 Check that these indexes exist:
 ```bash
 npx prisma db seed  # Optional: Check db connection
 ```
 
-### Step 4: Run Initial Bulk Import
+### Step 3: Run Initial Bulk Import
 
 **Local Testing:**
 ```bash
@@ -210,7 +206,7 @@ curl -X POST "https://mnrega-mah.vercel.app/api/admin/fetch-all-states-optimized
 
 ⏱️ Expected duration: **30-45 minutes** for all 34 states
 
-### Step 5: Configure GitHub Actions
+### Step 4: Configure GitHub Actions
 
 Add secrets in GitHub repository settings:
 1. Go to **Settings → Secrets and variables → Actions**
