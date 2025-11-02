@@ -58,7 +58,7 @@ const INDIAN_STATES = [
 
 const API_KEY = process.env.DATA_GOV_API_KEY!;
 const CRON_SECRET = process.env.CRON_SECRET!;
-const BASE_URL = "https://api.data.gov.in/resource/195f2dea-d9eb-4b3c-b980-e3421e5ece62";
+const BASE_URL = "https://api.data.gov.in/resource/ee03643a-ee4c-48c2-ac30-9f2ff26ab722";
 
 // Optimization settings
 const BATCH_SIZE = 500;           // Records per batch
