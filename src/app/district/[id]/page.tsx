@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { DistrictDashboard } from "@/components/district-dashboard";
 import { DistrictDashboardSkeleton } from "@/components/district-dashboard-skeleton";
+import prisma from "@/lib/prisma";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -9,37 +10,53 @@ interface PageProps {
 
 async function getDistrictData(id: string) {
   try {
-    // In production on Vercel, use absolute URL with the deployment domain
-    // In development, use localhost
-    // In preview (dev branch), use preview URL
-    const isProduction = process.env.VERCEL_ENV === 'production';
-    const isPreview = process.env.VERCEL_ENV === 'preview';
+    console.log('🔍 Fetching district directly from database:', id);
     
-    const baseUrl = isProduction 
-      ? 'https://mnrega-mah.vercel.app' 
-      : isPreview
-      ? 'https://mnrega-mah-git-dev-mohneesh-naidu-s-projects.vercel.app'
-      : 'http://localhost:3000';
-    
-    console.log('🔍 Fetching district from:', `${baseUrl}/api/districts/${id}`);
-    
-    // Fetch district details with all metrics
-    const districtRes = await fetch(`${baseUrl}/api/districts/${id}`, {
-      next: { revalidate: 120 },
+    // Fetch district details with all metrics directly from database
+    // This works better in server components - no need for HTTP calls
+    const district = await prisma.district.findUnique({
+      where: { id },
+      include: {
+        metrics: {
+          orderBy: [
+            { finYear: 'desc' },
+            { month: 'desc' }
+          ]
+        }
+      }
     });
 
-    if (!districtRes.ok) {
-      console.log('❌ District fetch failed:', districtRes.status);
+    if (!district) {
+      console.log('❌ District not found:', id);
       return null;
     }
 
-    const districtData = await districtRes.json();
+    console.log('✅ Found district:', district.name, 'with', district.metrics.length, 'metrics');
     
-    if (!districtData.success) {
-      return null;
-    }
-
-    return districtData.data;
+    // Transform data to match component interface
+    return {
+      id: district.id,
+      code: district.code,
+      name: district.name,
+      stateCode: district.stateCode,
+      stateName: district.stateName,
+      metrics: district.metrics.map(m => ({
+        id: m.id,
+        finYear: m.finYear,
+        month: m.month,
+        totalExpenditure: m.totalExpenditure || 0,
+        totalHouseholdsWorked: m.totalHouseholdsWorked || 0,
+        numberOfCompletedWorks: m.numberOfCompletedWorks || 0,
+        numberOfOngoingWorks: m.numberOfOngoingWorks || 0,
+        womenPersonDays: m.womenPersonDays || 0,
+        scPersonDays: m.scPersonDays || 0,
+        stPersonDays: m.stPersonDays || 0,
+        personDaysOfCentralLiability: m.personDaysOfCentralLiability || 0,
+        averageWageRatePerDay: m.averageWageRatePerDay || 0,
+        totalNumberOfActiveJobCards: m.totalNumberOfActiveJobCards || 0,
+        createdAt: m.createdAt.toISOString(),
+      }))
+    };
   } catch (error) {
     console.error('Failed to fetch district data:', error);
     return null;

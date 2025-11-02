@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { ComparePageClient } from "@/components/compare-page-client";
 import { ComparePageSkeleton } from "@/components/compare-page-skeleton";
+import prisma from "@/lib/prisma";
 
 interface PageProps {
   searchParams: Promise<{ d1?: string; d2?: string }>;
@@ -12,41 +13,51 @@ async function getDistrictsData(d1?: string, d2?: string) {
   }
 
   try {
-    // In production on Vercel, use absolute URL with the deployment domain
-    // In development, use localhost
-    // In preview (dev branch), use preview URL
-    const isProduction = process.env.VERCEL_ENV === 'production';
-    const isPreview = process.env.VERCEL_ENV === 'preview';
+    console.log('🔍 Fetching compare districts directly from database');
+    const districtIds = [d1, d2].filter(Boolean) as string[];
     
-    const baseUrl = isProduction 
-      ? 'https://mnrega-mah.vercel.app' 
-      : isPreview
-      ? 'https://mnrega-mah-git-dev-mohneesh-naidu-s-projects.vercel.app'
-      : 'http://localhost:3000';
-    
-    console.log('🔍 Fetching compare districts from:', baseUrl);
-    const promises = [];
+    // Fetch districts directly from database
+    const districts = await prisma.district.findMany({
+      where: {
+        id: { in: districtIds }
+      },
+      include: {
+        metrics: {
+          orderBy: [
+            { finYear: 'desc' },
+            { month: 'desc' }
+          ]
+        }
+      }
+    });
 
-    if (d1) {
-      promises.push(
-        fetch(`${baseUrl}/api/districts/${d1}`, { next: { revalidate: 120 } })
-          .then(res => res.json())
-      );
-    }
+    // Transform data to match component interface
+    const transformedDistricts = districts.map(district => ({
+      id: district.id,
+      code: district.code,
+      name: district.name,
+      stateCode: district.stateCode,
+      stateName: district.stateName,
+      metrics: district.metrics.map(m => ({
+        id: m.id,
+        finYear: m.finYear,
+        month: m.month,
+        totalExpenditure: m.totalExpenditure || 0,
+        totalHouseholdsWorked: m.totalHouseholdsWorked || 0,
+        numberOfCompletedWorks: m.numberOfCompletedWorks || 0,
+        numberOfOngoingWorks: m.numberOfOngoingWorks || 0,
+        womenPersonDays: m.womenPersonDays || 0,
+        scPersonDays: m.scPersonDays || 0,
+        stPersonDays: m.stPersonDays || 0,
+        personDaysOfCentralLiability: m.personDaysOfCentralLiability || 0,
+        averageWageRatePerDay: m.averageWageRatePerDay || 0,
+        totalNumberOfActiveJobCards: m.totalNumberOfActiveJobCards || 0,
+        createdAt: m.createdAt.toISOString(),
+      }))
+    }));
 
-    if (d2) {
-      promises.push(
-        fetch(`${baseUrl}/api/districts/${d2}`, { next: { revalidate: 120 } })
-          .then(res => res.json())
-      );
-    }
-
-    const results = await Promise.all(promises);
-    const districts = results
-      .filter(r => r.success)
-      .map(r => r.data);
-
-    return { districts, error: null };
+    console.log('✅ Found', transformedDistricts.length, 'districts');
+    return { districts: transformedDistricts, error: null };
   } catch (error) {
     console.error('Failed to fetch districts:', error);
     return { districts: [], error: 'Failed to load districts' };
