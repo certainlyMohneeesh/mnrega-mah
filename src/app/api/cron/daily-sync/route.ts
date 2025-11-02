@@ -110,8 +110,40 @@ async function processRecords(records: any[]): Promise<{ districts: number; metr
       
       districtsUpdated++;
 
+      // Helper functions for type conversion
+      const toNumber = (val: any): number | null => {
+        if (val === null || val === undefined || val === "" || val === "NA") return null;
+        const num = typeof val === "string" ? parseFloat(val) : val;
+        return isNaN(num) ? null : num;
+      };
+
+      const toInt = (val: any): number | null => {
+        if (val === null || val === undefined || val === "" || val === "NA") return null;
+        const num = typeof val === "string" ? parseInt(val, 10) : val;
+        return isNaN(num) ? null : num;
+      };
+
       for (const metric of districtData.metrics) {
         try {
+          const metricData = {
+            approvedLabourBudget: toNumber(metric.Approved_Labour_Budget),
+            averageWageRatePerDay: toNumber(metric.Average_Wage_rate_per_day_per_person),
+            averageDaysOfEmploymentPerHousehold: toNumber(metric.Average_days_of_employment_provided_per_Household),
+            totalExpenditure: toNumber(metric.Total_Exp),
+            wages: toNumber(metric.Wages),
+            numberOfCompletedWorks: toInt(metric.Number_of_Completed_Works),
+            numberOfOngoingWorks: toInt(metric.Number_of_Ongoing_Works),
+            personDaysOfCentralLiability: toNumber(metric.Persondays_of_Central_Liability_so_far),
+            scPersonDays: toNumber(metric.SC_persondays),
+            stPersonDays: toNumber(metric.ST_persondays),
+            womenPersonDays: toNumber(metric.Women_Persondays),
+            totalHouseholdsWorked: toInt(metric.Total_Households_Worked),
+            totalIndividualsWorked: toInt(metric.Total_Individuals_Worked),
+            totalNumberOfActiveJobCards: toInt(metric.Total_No_of_Active_Job_Cards),
+            totalNumberOfActiveWorkers: toInt(metric.Total_No_of_Active_Workers),
+            totalNumberOfHHsCompleted100Days: toInt(metric.Total_No_of_HHs_completed_100_Days_of_Wage_Employment),
+          };
+
           await prisma.monthlyMetric.upsert({
             where: {
               districtId_finYear_month: {
@@ -120,44 +152,12 @@ async function processRecords(records: any[]): Promise<{ districts: number; metr
                 month: metric.month || "",
               },
             },
-            update: {
-              approvedLabourBudget: metric.Approved_Labour_Budget || null,
-              averageWageRatePerDay: metric.Average_Wage_rate_per_day_per_person || null,
-              averageDaysOfEmploymentPerHousehold: metric.Average_days_of_employment_provided_per_Household || null,
-              totalExpenditure: metric.Total_Exp || null,
-              wages: metric.Wages || null,
-              numberOfCompletedWorks: metric.Number_of_Completed_Works || null,
-              numberOfOngoingWorks: metric.Number_of_Ongoing_Works || null,
-              personDaysOfCentralLiability: metric.Persondays_of_Central_Liability_so_far || null,
-              scPersonDays: metric.SC_persondays || null,
-              stPersonDays: metric.ST_persondays || null,
-              womenPersonDays: metric.Women_Persondays || null,
-              totalHouseholdsWorked: metric.Total_Households_Worked || null,
-              totalIndividualsWorked: metric.Total_Individuals_Worked || null,
-              totalNumberOfActiveJobCards: metric.Total_No_of_Active_Job_Cards || null,
-              totalNumberOfActiveWorkers: metric.Total_No_of_Active_Workers || null,
-              totalNumberOfHHsCompleted100Days: metric.Total_No_of_HHs_completed_100_Days_of_Wage_Employment || null,
-            },
+            update: metricData,
             create: {
               districtId: district.id,
               finYear: metric.fin_year || "",
               month: metric.month || "",
-              approvedLabourBudget: metric.Approved_Labour_Budget || null,
-              averageWageRatePerDay: metric.Average_Wage_rate_per_day_per_person || null,
-              averageDaysOfEmploymentPerHousehold: metric.Average_days_of_employment_provided_per_Household || null,
-              totalExpenditure: metric.Total_Exp || null,
-              wages: metric.Wages || null,
-              numberOfCompletedWorks: metric.Number_of_Completed_Works || null,
-              numberOfOngoingWorks: metric.Number_of_Ongoing_Works || null,
-              personDaysOfCentralLiability: metric.Persondays_of_Central_Liability_so_far || null,
-              scPersonDays: metric.SC_persondays || null,
-              stPersonDays: metric.ST_persondays || null,
-              womenPersonDays: metric.Women_Persondays || null,
-              totalHouseholdsWorked: metric.Total_Households_Worked || null,
-              totalIndividualsWorked: metric.Total_Individuals_Worked || null,
-              totalNumberOfActiveJobCards: metric.Total_No_of_Active_Job_Cards || null,
-              totalNumberOfActiveWorkers: metric.Total_No_of_Active_Workers || null,
-              totalNumberOfHHsCompleted100Days: metric.Total_No_of_HHs_completed_100_Days_of_Wage_Employment || null,
+              ...metricData,
             },
           });
           

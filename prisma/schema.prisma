@@ -8,19 +8,20 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// District master data for Maharashtra
+// District master data for all Indian states
 model District {
   id        String          @id @default(cuid())
-  code      String          @unique // e.g., "1810" from CSV district_code
-  name      String          // District name from CSV
-  stateCode String          @default("18") // Maharashtra state code
-  stateName String          @default("Maharashtra")
+  code      String          // District code (unique per state)
+  name      String          // District name
+  stateCode String          // "18" for Maharashtra, "01" for Andaman, etc.
+  stateName String          // "Maharashtra", "Bihar", "West Bengal", etc.
   metrics   MonthlyMetric[]
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 
-  @@index([stateCode])
-  @@index([code])
+  @@unique([stateCode, code]) // Composite unique: same district code can exist in different states
+  @@index([stateCode])        // Fast state-wise filtering
+  @@index([stateName])        // For UI dropdowns and searches
   @@map("districts")
 }
 
@@ -29,6 +30,10 @@ model MonthlyMetric {
   id         String   @id @default(cuid())
   districtId String
   district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  
+  // Denormalized fields for fast queries (no joins needed)
+  stateCode String // Denormalized from district for performance
+  stateName String // Denormalized from district for UI
   
   // Time identifiers
   finYear String // e.g., "2024-2025"
@@ -82,6 +87,9 @@ model MonthlyMetric {
 
   @@unique([districtId, finYear, month])
   @@index([districtId])
+  @@index([stateCode, finYear])  // Critical for state-wise queries
+  @@index([stateName, finYear])  // For UI dropdowns
+  @@index([finYear, month])      // Time-based queries
   @@index([finYear])
   @@index([month])
   @@map("monthly_metrics")

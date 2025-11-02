@@ -139,6 +139,52 @@ async function processRecords(records: any[]): Promise<{ districts: number; metr
       // Upsert metrics for this district
       for (const metric of districtData.metrics) {
         try {
+          // Helper function to safely convert to number
+          const toNumber = (val: any): number | null => {
+            if (val === null || val === undefined || val === "" || val === "NA") return null;
+            const num = typeof val === "string" ? parseFloat(val) : val;
+            return isNaN(num) ? null : num;
+          };
+
+          const toInt = (val: any): number | null => {
+            if (val === null || val === undefined || val === "" || val === "NA") return null;
+            const num = typeof val === "string" ? parseInt(val, 10) : val;
+            return isNaN(num) ? null : num;
+          };
+
+          const metricData = {
+            approvedLabourBudget: toNumber(metric.Approved_Labour_Budget),
+            averageWageRatePerDay: toNumber(metric.Average_Wage_rate_per_day_per_person),
+            averageDaysOfEmploymentPerHousehold: toNumber(metric.Average_days_of_employment_provided_per_Household),
+            differentlyAbledPersonsWorked: toInt(metric.Differently_abled_persons_worked),
+            materialAndSkilledWages: toNumber(metric.Material_and_skilled_Wages),
+            totalExpenditure: toNumber(metric.Total_Exp),
+            wages: toNumber(metric.Wages),
+            totalAdministrativeExpenditure: toNumber(metric.Total_Adm_Expenditure),
+            numberOfCompletedWorks: toInt(metric.Number_of_Completed_Works),
+            numberOfOngoingWorks: toInt(metric.Number_of_Ongoing_Works),
+            numberOfWorksTakenUp: toInt(metric.Total_No_of_Works_Takenup),
+            numberOfGPsWithNilExp: toInt(metric.Number_of_GPs_with_NIL_exp),
+            personDaysOfCentralLiability: toNumber(metric.Persondays_of_Central_Liability_so_far),
+            scPersonDays: toNumber(metric.SC_persondays),
+            stPersonDays: toNumber(metric.ST_persondays),
+            womenPersonDays: toNumber(metric.Women_Persondays),
+            totalHouseholdsWorked: toInt(metric.Total_Households_Worked),
+            totalIndividualsWorked: toInt(metric.Total_Individuals_Worked),
+            totalNumberOfActiveJobCards: toInt(metric.Total_No_of_Active_Job_Cards),
+            totalNumberOfActiveWorkers: toInt(metric.Total_No_of_Active_Workers),
+            totalNumberOfHHsCompleted100Days: toInt(metric.Total_No_of_HHs_completed_100_Days_of_Wage_Employment),
+            totalNumberOfJobCardsIssued: toInt(metric.Total_No_of_JobCards_issued),
+            totalNumberOfWorkers: toInt(metric.Total_No_of_Workers),
+            scWorkersAgainstActiveWorkers: toNumber(metric.SC_workers_against_active_workers),
+            stWorkersAgainstActiveWorkers: toNumber(metric.ST_workers_against_active_workers),
+            percentOfCategoryBWorks: toNumber(metric.percent_of_Category_B_Works),
+            percentOfExpenditureOnAgricultureAllied: toNumber(metric.percent_of_Expenditure_on_Agriculture_Allied_Works),
+            percentOfNRMExpenditure: toNumber(metric.percent_of_NRM_Expenditure),
+            percentagePaymentsGeneratedWithin15Days: toNumber(metric.percentage_payments_gererated_within_15_days),
+            remarks: metric.Remarks || null,
+          };
+
           await prisma.monthlyMetric.upsert({
             where: {
               districtId_finYear_month: {
@@ -147,72 +193,12 @@ async function processRecords(records: any[]): Promise<{ districts: number; metr
                 month: metric.month || "",
               },
             },
-            update: {
-              approvedLabourBudget: metric.Approved_Labour_Budget || null,
-              averageWageRatePerDay: metric.Average_Wage_rate_per_day_per_person || null,
-              averageDaysOfEmploymentPerHousehold: metric.Average_days_of_employment_provided_per_Household || null,
-              differentlyAbledPersonsWorked: metric.Differently_abled_persons_worked || null,
-              materialAndSkilledWages: metric.Material_and_skilled_Wages || null,
-              totalExpenditure: metric.Total_Exp || null,
-              wages: metric.Wages || null,
-              totalAdministrativeExpenditure: metric.Total_Adm_Expenditure || null,
-              numberOfCompletedWorks: metric.Number_of_Completed_Works || null,
-              numberOfOngoingWorks: metric.Number_of_Ongoing_Works || null,
-              numberOfWorksTakenUp: metric.Total_No_of_Works_Takenup || null,
-              numberOfGPsWithNilExp: metric.Number_of_GPs_with_NIL_exp || null,
-              personDaysOfCentralLiability: metric.Persondays_of_Central_Liability_so_far || null,
-              scPersonDays: metric.SC_persondays || null,
-              stPersonDays: metric.ST_persondays || null,
-              womenPersonDays: metric.Women_Persondays || null,
-              totalHouseholdsWorked: metric.Total_Households_Worked || null,
-              totalIndividualsWorked: metric.Total_Individuals_Worked || null,
-              totalNumberOfActiveJobCards: metric.Total_No_of_Active_Job_Cards || null,
-              totalNumberOfActiveWorkers: metric.Total_No_of_Active_Workers || null,
-              totalNumberOfHHsCompleted100Days: metric.Total_No_of_HHs_completed_100_Days_of_Wage_Employment || null,
-              totalNumberOfJobCardsIssued: metric.Total_No_of_JobCards_issued || null,
-              totalNumberOfWorkers: metric.Total_No_of_Workers || null,
-              scWorkersAgainstActiveWorkers: metric.SC_workers_against_active_workers || null,
-              stWorkersAgainstActiveWorkers: metric.ST_workers_against_active_workers || null,
-              percentOfCategoryBWorks: metric.percent_of_Category_B_Works || null,
-              percentOfExpenditureOnAgricultureAllied: metric.percent_of_Expenditure_on_Agriculture_Allied_Works || null,
-              percentOfNRMExpenditure: metric.percent_of_NRM_Expenditure || null,
-              percentagePaymentsGeneratedWithin15Days: metric.percentage_payments_gererated_within_15_days || null,
-              remarks: metric.Remarks || null,
-            },
+            update: metricData,
             create: {
               districtId: district.id,
               finYear: metric.fin_year || "",
               month: metric.month || "",
-              approvedLabourBudget: metric.Approved_Labour_Budget || null,
-              averageWageRatePerDay: metric.Average_Wage_rate_per_day_per_person || null,
-              averageDaysOfEmploymentPerHousehold: metric.Average_days_of_employment_provided_per_Household || null,
-              differentlyAbledPersonsWorked: metric.Differently_abled_persons_worked || null,
-              materialAndSkilledWages: metric.Material_and_skilled_Wages || null,
-              totalExpenditure: metric.Total_Exp || null,
-              wages: metric.Wages || null,
-              totalAdministrativeExpenditure: metric.Total_Adm_Expenditure || null,
-              numberOfCompletedWorks: metric.Number_of_Completed_Works || null,
-              numberOfOngoingWorks: metric.Number_of_Ongoing_Works || null,
-              numberOfWorksTakenUp: metric.Total_No_of_Works_Takenup || null,
-              numberOfGPsWithNilExp: metric.Number_of_GPs_with_NIL_exp || null,
-              personDaysOfCentralLiability: metric.Persondays_of_Central_Liability_so_far || null,
-              scPersonDays: metric.SC_persondays || null,
-              stPersonDays: metric.ST_persondays || null,
-              womenPersonDays: metric.Women_Persondays || null,
-              totalHouseholdsWorked: metric.Total_Households_Worked || null,
-              totalIndividualsWorked: metric.Total_Individuals_Worked || null,
-              totalNumberOfActiveJobCards: metric.Total_No_of_Active_Job_Cards || null,
-              totalNumberOfActiveWorkers: metric.Total_No_of_Active_Workers || null,
-              totalNumberOfHHsCompleted100Days: metric.Total_No_of_HHs_completed_100_Days_of_Wage_Employment || null,
-              totalNumberOfJobCardsIssued: metric.Total_No_of_JobCards_issued || null,
-              totalNumberOfWorkers: metric.Total_No_of_Workers || null,
-              scWorkersAgainstActiveWorkers: metric.SC_workers_against_active_workers || null,
-              stWorkersAgainstActiveWorkers: metric.ST_workers_against_active_workers || null,
-              percentOfCategoryBWorks: metric.percent_of_Category_B_Works || null,
-              percentOfExpenditureOnAgricultureAllied: metric.percent_of_Expenditure_on_Agriculture_Allied_Works || null,
-              percentOfNRMExpenditure: metric.percent_of_NRM_Expenditure || null,
-              percentagePaymentsGeneratedWithin15Days: metric.percentage_payments_gererated_within_15_days || null,
-              remarks: metric.Remarks || null,
+              ...metricData,
             },
           });
           
