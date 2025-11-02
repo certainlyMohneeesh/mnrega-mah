@@ -5,27 +5,61 @@ export const dynamic = "force-dynamic";
 
 /**
  * GET /api/districts
- * Returns list of all Maharashtra districts
+ * Returns list of all districts with pagination and filtering
+ * Query params: page, limit, stateCode, stateName, search
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const includeStats = searchParams.get("includeStats") === "true";
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "50");
+    const stateCode = searchParams.get("stateCode");
+    const stateName = searchParams.get("stateName");
+    const search = searchParams.get("search");
 
-    // Fetch only districts that have metrics - more efficient single query
+    // Build where clause
+    const where: any = {
+      metrics: {
+        some: {} // Only include districts that have at least one metric
+      }
+    };
+
+    if (stateCode) {
+      where.stateCode = stateCode;
+    }
+    if (stateName) {
+      where.stateName = {
+        contains: stateName,
+        mode: 'insensitive'
+      };
+    }
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { code: { contains: search, mode: 'insensitive' } },
+        { stateName: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+
+    // Fetch total count
+    const totalCount = await prisma.district.count({ where });
+
+    // Fetch paginated districts
     const districts = await prisma.district.findMany({
-      where: {
-        stateCode: "18", // Maharashtra state code
-        metrics: {
-          some: {} // Only include districts that have at least one metric
-        }
-      },
-      orderBy: {
-        name: "asc",
-      },
+      where,
+      orderBy: [
+        { stateName: "asc" },
+        { name: "asc" }
+      ],
+      skip,
+      take: limit,
     });
 
-    console.log(`✅ Found ${districts.length} districts with metrics data`);
+    console.log(`✅ Found ${districts.length} districts (page ${page}/${Math.ceil(totalCount / limit)}, total: ${totalCount})`);
 
     // If stats are requested, fetch latest metrics for each district
     let response;
@@ -56,6 +90,13 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         data: response,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          hasMore: page < Math.ceil(totalCount / limit)
+        }
       },
       {
         headers: {

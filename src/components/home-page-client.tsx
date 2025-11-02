@@ -9,6 +9,22 @@ import { DistrictCard } from "@/components/district-card";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { LocationDetector } from "@/components/location-detector";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
   TrendingUp,
   Users,
   Briefcase,
@@ -20,6 +36,7 @@ import {
   FileText,
   Shield,
   Globe,
+  Filter,
 } from "lucide-react";
 import { formatIndianNumber, formatNumber, formatDate } from "@/lib/utils";
 import { useLanguage } from "@/contexts/language-context";
@@ -56,7 +73,54 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
   const [districts, setDistricts] = useState<District[]>(initialData.districts);
   const [stateStats, setStateStats] = useState(initialData.stateStats);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedState, setSelectedState] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    totalPages: 1,
+    hasMore: false
+  });
   const { t } = useLanguage();
+
+  // All 34 Indian States/UTs for the filter
+  const allIndianStates = [
+    "ANDAMAN AND NICOBAR",
+    "ANDHRA PRADESH",
+    "ARUNACHAL PRADESH",
+    "ASSAM",
+    "BIHAR",
+    "CHANDIGARH",
+    "CHHATTISGARH",
+    "DADRA AND NAGAR HAVELI",
+    "DAMAN AND DIU",
+    "GOA",
+    "GUJARAT",
+    "HARYANA",
+    "HIMACHAL PRADESH",
+    "JAMMU AND KASHMIR",
+    "JHARKHAND",
+    "KARNATAKA",
+    "KERALA",
+    "LADAKH",
+    "LAKSHADWEEP",
+    "MADHYA PRADESH",
+    "MAHARASHTRA",
+    "MANIPUR",
+    "MEGHALAYA",
+    "MIZORAM",
+    "NAGALAND",
+    "ODISHA",
+    "PUDUCHERRY",
+    "PUNJAB",
+    "RAJASTHAN",
+    "SIKKIM",
+    "TAMIL NADU",
+    "TELANGANA",
+    "TRIPURA",
+    "UTTAR PRADESH",
+    "UTTARAKHAND",
+    "WEST BENGAL"
+  ];
 
   // Check if banner was previously dismissed
   useEffect(() => {
@@ -67,47 +131,63 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
     }
   }, []);
 
-  // Fallback: If districts are empty on initial load, fetch client-side
+  // Fetch districts with pagination and filtering
   useEffect(() => {
-    if (districts.length === 0 && !isLoading) {
-      console.log('🔄 No initial districts, fetching client-side...');
-      setIsLoading(true);
-      
-      Promise.all([
-        fetch('/api/districts?includeStats=true').then(res => res.json()),
-        fetch('/api/state/latest').then(res => res.json())
-      ])
-        .then(([districtsData, stateData]) => {
-          if (districtsData.success) {
-            console.log('✅ Client-side districts loaded:', districtsData.data.length);
-            setDistricts(districtsData.data);
-          }
-          if (stateData.success) {
-            setStateStats(stateData.data);
-          }
-        })
-        .catch(error => {
-          console.error('❌ Client-side fetch failed:', error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    setIsLoading(true);
+    
+    const params = new URLSearchParams({
+      includeStats: 'true',
+      page: currentPage.toString(),
+      limit: '15'
+    });
+    
+    if (selectedState && selectedState !== 'all') {
+      params.append('stateName', selectedState);
     }
-  }, [districts.length, isLoading]);
+    
+    if (searchQuery.trim()) {
+      params.append('search', searchQuery.trim());
+    }
+    
+    Promise.all([
+      fetch(`/api/districts?${params}`).then(res => res.json()),
+      fetch('/api/state/latest').then(res => res.json())
+    ])
+      .then(([districtsData, stateData]) => {
+        if (districtsData.success) {
+          console.log('✅ Districts loaded:', districtsData.data.length, 'Total:', districtsData.pagination?.total);
+          setDistricts(districtsData.data);
+          if (districtsData.pagination) {
+            setPagination(districtsData.pagination);
+          }
+        }
+        if (stateData.success) {
+          setStateStats(stateData.data);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Fetch failed:', error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [currentPage, selectedState, searchQuery]);
 
   const handleDismissBanner = () => {
     localStorage.setItem('languageBannerDismissed', 'true');
     setShowBanner(false);
   };
 
-  const filteredDistricts = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return districts;
-    }
-    return districts.filter((district) =>
-      district.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [districts, searchQuery]);
+  // Reset to page 1 when filters change
+  const handleStateChange = (value: string) => {
+    setSelectedState(value);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
 
 
 
@@ -439,25 +519,110 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
             <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
               {t('home.districts.title')}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-              {t('home.districts.count')
-                .replace('{count}', filteredDistricts.length.toString())
-                .replace('{total}', districts.length.toString())}
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
+              Showing {districts.length} of {pagination.total} districts
             </p>
-            <div className="max-w-md mx-auto">
-              <SearchBar 
-                onSearch={setSearchQuery} 
-                placeholder={t('home.search.placeholder')} 
-              />
+            
+            {/* Filters */}
+            <div className="max-w-4xl mx-auto mb-8 space-y-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+                {/* Search Bar */}
+                <div className="flex-1">
+                  <SearchBar 
+                    onSearch={handleSearchChange} 
+                    placeholder={t('home.search.placeholder')} 
+                  />
+                </div>
+                
+                {/* State Filter */}
+                <div className="w-full sm:w-64">
+                  <Select value={selectedState} onValueChange={handleStateChange}>
+                    <SelectTrigger className="w-full h-10">
+                      <Filter className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="All States" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All States ({pagination.total})</SelectItem>
+                      {allIndianStates.map((state) => (
+                        <SelectItem key={state} value={state}>
+                          {state}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </div>
 
-          {filteredDistricts.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredDistricts.map((district) => (
-                <DistrictCard key={district.id} district={district} />
-              ))}
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-lg text-gray-600">Loading districts...</p>
             </div>
+          ) : districts.length > 0 ? (
+            <>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {districts.map((district: District) => (
+                  <DistrictCard key={district.id} district={district} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {pagination.totalPages > 1 && (
+                <div className="mt-12 flex justify-center">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                      
+                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                        const page = i + 1;
+                        return (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+                      
+                      {pagination.totalPages > 5 && (
+                        <>
+                          <PaginationItem>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                          <PaginationItem>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(pagination.totalPages)}
+                              isActive={currentPage === pagination.totalPages}
+                              className="cursor-pointer"
+                            >
+                              {pagination.totalPages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        </>
+                      )}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(p => Math.min(pagination.totalPages, p + 1))}
+                          className={currentPage === pagination.totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-12">
               <p className="text-lg text-gray-600">{t('home.noResults')}</p>
