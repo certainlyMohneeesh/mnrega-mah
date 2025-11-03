@@ -1,7 +1,7 @@
 import { getRequestConfig } from "next-intl/server";
 
 // Supported locales
-export const locales = ["mr", "hi", "en"] as const;
+export const locales = ["mr", "hi", "en", "ta", "te", "ml", "kn", "bn", "gu"] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "mr";
@@ -10,6 +10,12 @@ export const localeNames: Record<Locale, string> = {
   mr: "मराठी",
   hi: "हिंदी",
   en: "English",
+  ta: "தமிழ்",
+  te: "తెలుగు",
+  ml: "മലയാളം",
+  kn: "ಕನ್ನಡ",
+  bn: "বাংলা",
+  gu: "ગુજરાતી",
 };
 
 export default getRequestConfig(async ({ requestLocale }) => {

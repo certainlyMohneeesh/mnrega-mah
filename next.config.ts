@@ -3,12 +3,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
   
@@ -55,7 +52,7 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=(self)",
+            value: "camera=(), microphone=(self), geolocation=(self)",
           },
           {
             key: "Content-Security-Policy",
@@ -90,5 +87,4 @@ const nextConfig = {
 };
 
 // Wrap with next-intl
-// @ts-expect-error - eslint config is valid but not in NextConfig type
 export default withNextIntl(nextConfig);

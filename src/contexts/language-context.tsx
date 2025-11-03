@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Language = 'en' | 'mr' | 'hi';
+type Language = 'en' | 'mr' | 'hi' | 'ta' | 'te' | 'ml' | 'kn' | 'bn' | 'gu';
 
 interface LanguageContextType {
   language: Language;
@@ -12,8 +12,8 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// Translation keys
-const translations: Record<Language, Record<string, string>> = {
+// Translation keys (fallback for initial render - will be replaced by JSON files)
+const translations: Partial<Record<Language, Record<string, string>>> = {
   en: {
     // Navigation
     'nav.home': 'Home',
@@ -361,22 +361,70 @@ interface LanguageProviderProps {
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
   const [language, setLanguageState] = useState<Language>('mr'); // Default to Marathi
+  const [loadedTranslations, setLoadedTranslations] = useState<Record<Language, Record<string, string>>>({} as Record<Language, Record<string, string>>);
 
   useEffect(() => {
     // Load language from localStorage
     const saved = localStorage.getItem('language');
-    if (saved && (saved === 'en' || saved === 'mr' || saved === 'hi')) {
-      setLanguageState(saved);
+    if (saved && ['en', 'mr', 'hi', 'ta', 'te', 'ml', 'kn', 'bn', 'gu'].includes(saved)) {
+      setLanguageState(saved as Language);
     }
   }, []);
+
+  useEffect(() => {
+    // Load translations for current language if not already loaded
+    if (!loadedTranslations[language]) {
+      import(`../../messages/${language}.json`)
+        .then((module) => {
+          setLoadedTranslations(prev => ({
+            ...prev,
+            [language]: flattenTranslations(module.default)
+          }));
+        })
+        .catch((error) => {
+          console.error(`Failed to load translations for ${language}:`, error);
+          // Fallback to hardcoded translations if JSON loading fails
+          setLoadedTranslations(prev => ({
+            ...prev,
+            [language]: translations[language as keyof typeof translations] || {}
+          }));
+        });
+    }
+  }, [language, loadedTranslations]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem('language', lang);
   };
 
+  // Helper function to flatten nested translation object
+  const flattenTranslations = (obj: any, prefix = ''): Record<string, string> => {
+    const flattened: Record<string, string> = {};
+    
+    for (const key in obj) {
+      if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+        Object.assign(flattened, flattenTranslations(obj[key], prefix ? `${prefix}.${key}` : key));
+      } else {
+        flattened[prefix ? `${prefix}.${key}` : key] = obj[key];
+      }
+    }
+    
+    return flattened;
+  };
+
   const t = (key: string): string => {
-    return translations[language][key] || key;
+    // Try loaded translations first
+    if (loadedTranslations[language] && loadedTranslations[language][key]) {
+      return loadedTranslations[language][key];
+    }
+    
+    // Fallback to hardcoded translations
+    const langTranslations = translations[language as keyof typeof translations];
+    if (langTranslations && langTranslations[key]) {
+      return langTranslations[key];
+    }
+    
+    return key;
   };
 
   return (

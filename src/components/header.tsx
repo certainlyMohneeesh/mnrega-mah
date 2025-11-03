@@ -9,6 +9,12 @@ const languages = [
   { code: 'mr', name: 'मराठी', englishName: 'Marathi' },
   { code: 'hi', name: 'हिंदी', englishName: 'Hindi' },
   { code: 'en', name: 'English', englishName: 'English' },
+  { code: 'ta', name: 'தமிழ்', englishName: 'Tamil' },
+  { code: 'te', name: 'తెలుగు', englishName: 'Telugu' },
+  { code: 'ml', name: 'മലയാളം', englishName: 'Malayalam' },
+  { code: 'kn', name: 'ಕನ್ನಡ', englishName: 'Kannada' },
+  { code: 'bn', name: 'বাংলা', englishName: 'Bengali' },
+  { code: 'gu', name: 'ગુજરાતી', englishName: 'Gujarati' },
 ] as const;
 
 export function Header() {

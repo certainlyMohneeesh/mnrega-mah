@@ -1,0 +1,131 @@
+{
+  "common": {
+    "appName": "અમારો અવાજ, અમારા અધિકારો",
+    "appTagline": "મહારાષ્ટ્રમાં MGNREGA પ્રદર્શનને ટ્રેક કરો",
+    "loading": "લોડ થઈ રહ્યું છે...",
+    "error": "ભૂલ",
+    "retry": "ફરી પ્રયાસ કરો",
+    "close": "બંધ કરો",
+    "save": "સાચવો",
+    "cancel": "રદ કરો",
+    "search": "શોધો",
+    "filter": "ફિલ્ટર કરો",
+    "sort": "ક્રમમાં ગોઠવો",
+    "export": "નિકાસ કરો",
+    "share": "શેર કરો",
+    "back": "પાછળ",
+    "next": "આગળ",
+    "previous": "પહેલાં",
+    "home": "ઘર",
+    "settings": "સેટિંગ્સ"
+  },
+  "nav": {
+    "home": "ઘર",
+    "districts": "જિલ્લાઓ",
+    "compare": "સરખામણી કરો",
+    "about": "વિશે",
+    "settings": "સેટિંગ્સ",
+    "language": "ભાષા"
+  },
+  "home": {
+    "title": "મહારાષ્ટ્ર MGNREGA ડેશબોર્ડ",
+    "subtitle": "તમામ જિલ્લાઓમાં રોજગાર અને વિકાસને ટ્રેક કરો",
+    "selectDistrict": "એક જિલ્લો પસંદ કરો",
+    "viewStateData": "રાજ્ય વિહંગાવલોકન જુઓ",
+    "lastUpdated": "છેલ્લે અપડેટ કર્યું",
+    "dataUnavailable": "ડેટા અસ્થાયી રૂપે અનુપલબ્ધ છે. {date} ના રોજ છેલ્લે અપડેટ કરેલું બતાવી રહ્યું છે.",
+    "noData": "કોઈ ડેટા નથી"
+  },
+  "district": {
+    "title": "જિલ્લા ડેશબોર્ડ",
+    "selectDistrict": "જિલ્લો પસંદ કરો",
+    "performance": "પ્રદર્શન વિહંગાવલોકન",
+    "trends": "પ્રદર્શન વલણો",
+    "compareWith": "બીજા જિલ્લા સાથે સરખામણી કરો",
+    "noDataForDistrict": "પસંદ કરેલા જિલ્લા માટે કોઈ ડેટા નથી",
+    "viewHistory": "ઐતિહાસિક ડેટા જુઓ",
+    "listen": "સારાંશ સાંભળો"
+  },
+  "metrics": {
+    "householdsIssued": "જોબ કાર્ડ આપવામાં આવેલા પરિવારો",
+    "householdsEmployed": "રોજગારી મેળવેલા પરિવારો",
+    "personDaysGenerated": "વ્યક્તિ-દિવસો ઉત્પન્ન થયા",
+    "womenPersonDays": "મહિલા વ્યક્તિ-દિવસો",
+    "scPersonDays": "SC વ્યક્તિ-દિવસો",
+    "stPersonDays": "ST વ્યક્તિ-દિવસો",
+    "totalExpenditure": "કુલ ખર્ચ",
+    "wageExpenditure": "વેતન ખર્ચ",
+    "materialExpenditure": "સામગ્રી ખર્ચ",
+    "worksCompleted": "પૂર્ણ થયેલા કામો",
+    "worksOngoing": "ચાલુ કામો",
+    "avgDaysPerHousehold": "પરિવાર દીઠ સરેરાશ દિવસો",
+    "avgWageRate": "સરેરાશ વેતન દર",
+    "paymentCompliance": "15 દિવસમાં ચુકવણી"
+  },
+  "compare": {
+    "title": "જિલ્લાઓની સરખામણી કરો",
+    "selectFirst": "પ્રથમ જિલ્લો પસંદ કરો",
+    "selectSecond": "બીજો જિલ્લો પસંદ કરો",
+    "selectMetric": "સરખામણી કરવા માટે મેટ્રિક પસંદ કરો",
+    "comparing": "{district1} vs {district2} ની સરખામણી કરી રહ્યા છીએ",
+    "latest": "નવીનતમ",
+    "average": "સરેરાશ ({period} મહિના)",
+    "difference": "તફાવત",
+    "percentDifference": "ટકાવારી તફાવત",
+    "noComparison": "સરખામણી કરવા માટે બે જિલ્લાઓ પસંદ કરો"
+  },
+  "settings": {
+    "title": "સેટિંગ્સ",
+    "language": "ભાષા",
+    "selectLanguage": "તમારી પસંદગીની ભાષા પસંદ કરો",
+    "marathi": "मराठी (મરાઠી)",
+    "hindi": "हिंदी (હિન્દી)",
+    "english": "English (અંગ્રેજી)",
+    "tamil": "தமிழ் (તમિલ)",
+    "telugu": "తెలుగు (તેલુગુ)",
+    "malayalam": "മലയാളം (મલયાલમ)",
+    "kannada": "ಕನ್ನಡ (કન્નડ)",
+    "bengali": "বাংলা (બંગાળી)",
+    "gujarati": "ગુજરાતી",
+    "audio": "ઓડિયો",
+    "enableAudio": "ઓડિયો સારાંશ સક્ષમ કરો",
+    "offline": "ઓફલાઈન મોડ",
+    "enableOffline": "ઓફલાઈન કેશિંગ સક્ષમ કરો",
+    "cacheSize": "કેશ કદ",
+    "clearCache": "કેશ સાફ કરો",
+    "notifications": "સૂચનાઓ",
+    "enableNotifications": "સૂચનાઓ સક્ષમ કરો",
+    "preferredDistrict": "પસંદગીનો જિલ્લો"
+  },
+  "errors": {
+    "generic": "કંઈક ખોટું થયું. મહેરબાની કરીને ફરી પ્રયાસ કરો.",
+    "networkError": "નેટવર્ક ભૂલ. મહેરબાની કરીને તમારું કનેક્શન તપાસો.",
+    "dataUnavailable": "ડેટા અસ્થાયી રૂપે અનુપલબ્ધ છે. {date} ના રોજ છેલ્લે અપડેટ કરેલું બતાવી રહ્યું છે.",
+    "districtNotFound": "જિલ્લો મળ્યો નથી.",
+    "noDataAvailable": "આ સમયગાળા માટે કોઈ ડેટા નથી.",
+    "apiError": "સર્વર પરથી ડેટા મેળવવામાં નિષ્ફળ.",
+    "cacheError": "કેશ કરેલા ડેટાને ઍક્સેસ કરવામાં નિષ્ફળ.",
+    "offlineMode": "તમે ઓફલાઈન છો. કેશ કરેલો ડેટા બતાવી રહ્યા છીએ."
+  },
+  "offline": {
+    "title": "ઓફલાઈન મોડ",
+    "message": "તમે હાલમાં ઓફલાઈન છો. કેશ કરેલો ડેટા જોઈ રહ્યા છો.",
+    "lastSync": "છેલ્લે સિંક કર્યું: {date}",
+    "syncNow": "હમણાં સિંક કરો",
+    "cacheCleared": "કેશ સફળતાપૂર્વક સાફ થયો"
+  },
+  "audio": {
+    "play": "સારાંશ ચલાવો",
+    "pause": "થોભાવો",
+    "stop": "બંધ કરો",
+    "loading": "ઓડિયો લોડ થઈ રહ્યો છે...",
+    "notSupported": "તમારા બ્રાઉઝરમાં ઓડિયો સપોર્ટેડ નથી"
+  },
+  "accessibility": {
+    "menu": "મેનુ",
+    "skipToContent": "મુખ્ય સામગ્રીમાં જાઓ",
+    "languageSelector": "ભાષા પસંદ કરનાર",
+    "districtSelector": "જિલ્લા પસંદ કરનાર",
+    "chartDescription": "સમયાંતરે {metric} બતાવતો ચાર્ટ"
+  }
+}

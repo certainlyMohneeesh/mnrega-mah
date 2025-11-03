@@ -1,0 +1,131 @@
+{
+  "common": {
+    "appName": "আমাদের কণ্ঠস্বর, আমাদের অধিকার",
+    "appTagline": "মহারাষ্ট্র জুড়ে MGNREGA কর্মক্ষমতা ট্র্যাক করুন",
+    "loading": "লোড হচ্ছে...",
+    "error": "ত্রুটি",
+    "retry": "আবার চেষ্টা করুন",
+    "close": "বন্ধ করুন",
+    "save": "সংরক্ষণ করুন",
+    "cancel": "বাতিল করুন",
+    "search": "অনুসন্ধান করুন",
+    "filter": "ফিল্টার করুন",
+    "sort": "সাজান",
+    "export": "রপ্তানি করুন",
+    "share": "শেয়ার করুন",
+    "back": "পিছনে",
+    "next": "পরবর্তী",
+    "previous": "পূর্ববর্তী",
+    "home": "হোম",
+    "settings": "সেটিংস"
+  },
+  "nav": {
+    "home": "হোম",
+    "districts": "জেলা",
+    "compare": "তুলনা করুন",
+    "about": "সম্পর্কে",
+    "settings": "সেটিংস",
+    "language": "ভাষা"
+  },
+  "home": {
+    "title": "মহারাষ্ট্র MGNREGA ড্যাশবোর্ড",
+    "subtitle": "সকল জেলায় কর্মসংস্থান এবং উন্নয়ন ট্র্যাক করুন",
+    "selectDistrict": "একটি জেলা নির্বাচন করুন",
+    "viewStateData": "রাজ্য সংক্ষিপ্ত বিবরণ দেখুন",
+    "lastUpdated": "সর্বশেষ আপডেট",
+    "dataUnavailable": "ডেটা সাময়িকভাবে অনুপলব্ধ। {date} তে সর্বশেষ আপডেট করা দেখাচ্ছে।",
+    "noData": "কোনো ডেটা নেই"
+  },
+  "district": {
+    "title": "জেলা ড্যাশবোর্ড",
+    "selectDistrict": "জেলা নির্বাচন করুন",
+    "performance": "কর্মক্ষমতার সংক্ষিপ্ত বিবরণ",
+    "trends": "কর্মক্ষমতা প্রবণতা",
+    "compareWith": "অন্য জেলার সাথে তুলনা করুন",
+    "noDataForDistrict": "নির্বাচিত জেলার জন্য কোনো ডেটা নেই",
+    "viewHistory": "ঐতিহাসিক ডেটা দেখুন",
+    "listen": "সারাংশ শুনুন"
+  },
+  "metrics": {
+    "householdsIssued": "কাজের কার্ড জারি করা পরিবার",
+    "householdsEmployed": "কর্মসংস্থান পাওয়া পরিবার",
+    "personDaysGenerated": "ব্যক্তি-দিন তৈরি হয়েছে",
+    "womenPersonDays": "মহিলা ব্যক্তি-দিন",
+    "scPersonDays": "SC ব্যক্তি-দিন",
+    "stPersonDays": "ST ব্যক্তি-দিন",
+    "totalExpenditure": "মোট ব্যয়",
+    "wageExpenditure": "মজুরি ব্যয়",
+    "materialExpenditure": "উপাদান ব্যয়",
+    "worksCompleted": "সম্পন্ন কাজ",
+    "worksOngoing": "চলমান কাজ",
+    "avgDaysPerHousehold": "পরিবার প্রতি গড় দিন",
+    "avgWageRate": "গড় মজুরি হার",
+    "paymentCompliance": "১৫ দিনের মধ্যে পেমেন্ট"
+  },
+  "compare": {
+    "title": "জেলাগুলি তুলনা করুন",
+    "selectFirst": "প্রথম জেলা নির্বাচন করুন",
+    "selectSecond": "দ্বিতীয় জেলা নির্বাচন করুন",
+    "selectMetric": "তুলনা করার জন্য মেট্রিক নির্বাচন করুন",
+    "comparing": "{district1} vs {district2} তুলনা করা হচ্ছে",
+    "latest": "সর্বশেষ",
+    "average": "গড় ({period} মাস)",
+    "difference": "পার্থক্য",
+    "percentDifference": "শতাংশ পার্থক্য",
+    "noComparison": "তুলনা করার জন্য দুটি জেলা নির্বাচন করুন"
+  },
+  "settings": {
+    "title": "সেটিংস",
+    "language": "ভাষা",
+    "selectLanguage": "আপনার পছন্দের ভাষা নির্বাচন করুন",
+    "marathi": "मराठी (মারাঠি)",
+    "hindi": "हिंदी (হিন্দি)",
+    "english": "English (ইংরেজি)",
+    "tamil": "தமிழ் (তামিল)",
+    "telugu": "తెలుగు (তেলুগু)",
+    "malayalam": "മലയാളം (মালায়ালাম)",
+    "kannada": "ಕನ್ನಡ (কন্নড়)",
+    "bengali": "বাংলা",
+    "gujarati": "ગુજરાતી (গুজরাটি)",
+    "audio": "অডিও",
+    "enableAudio": "অডিও সারাংশ সক্ষম করুন",
+    "offline": "অফলাইন মোড",
+    "enableOffline": "অফলাইন ক্যাশিং সক্ষম করুন",
+    "cacheSize": "ক্যাশ আকার",
+    "clearCache": "ক্যাশ পরিষ্কার করুন",
+    "notifications": "বিজ্ঞপ্তি",
+    "enableNotifications": "বিজ্ঞপ্তি সক্ষম করুন",
+    "preferredDistrict": "পছন্দের জেলা"
+  },
+  "errors": {
+    "generic": "কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "networkError": "নেটওয়ার্ক ত্রুটি। অনুগ্রহ করে আপনার সংযোগ পরীক্ষা করুন।",
+    "dataUnavailable": "ডেটা সাময়িকভাবে অনুপলব্ধ। {date} তে সর্বশেষ আপডেট করা দেখাচ্ছে।",
+    "districtNotFound": "জেলা পাওয়া যায়নি।",
+    "noDataAvailable": "এই সময়ের জন্য কোনো ডেটা নেই।",
+    "apiError": "সার্ভার থেকে ডেটা আনতে ব্যর্থ হয়েছে।",
+    "cacheError": "ক্যাশ করা ডেটা অ্যাক্সেস করতে ব্যর্থ হয়েছে।",
+    "offlineMode": "আপনি অফলাইন আছেন। ক্যাশ করা ডেটা দেখাচ্ছে।"
+  },
+  "offline": {
+    "title": "অফলাইন মোড",
+    "message": "আপনি বর্তমানে অফলাইন আছেন। ক্যাশ করা ডেটা দেখছেন।",
+    "lastSync": "সর্বশেষ সিঙ্ক: {date}",
+    "syncNow": "এখনই সিঙ্ক করুন",
+    "cacheCleared": "ক্যাশ সফলভাবে পরিষ্কার করা হয়েছে"
+  },
+  "audio": {
+    "play": "সারাংশ প্লে করুন",
+    "pause": "বিরতি দিন",
+    "stop": "থামান",
+    "loading": "অডিও লোড হচ্ছে...",
+    "notSupported": "আপনার ব্রাউজারে অডিও সমর্থিত নয়"
+  },
+  "accessibility": {
+    "menu": "মেনু",
+    "skipToContent": "মূল বিষয়বস্তুতে যান",
+    "languageSelector": "ভাষা নির্বাচক",
+    "districtSelector": "জেলা নির্বাচক",
+    "chartDescription": "সময়ের সাথে {metric} দেখানো চার্ট"
+  }
+}

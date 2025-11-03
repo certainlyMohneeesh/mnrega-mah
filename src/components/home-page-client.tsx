@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { SearchBar } from "@/components/search-bar";
+import { EnhancedSearch } from "@/components/enhanced-search";
 import { StatCard } from "@/components/stat-card";
 import { DistrictCard } from "@/components/district-card";
 import { StickyBanner } from "@/components/ui/sticky-banner";
@@ -38,6 +39,8 @@ import {
   Shield,
   Globe,
   Filter,
+  Search,
+  Mic,
 } from "lucide-react";
 import { formatIndianNumber, formatNumber, formatDate } from "@/lib/utils";
 import { useLanguage } from "@/contexts/language-context";
@@ -61,6 +64,19 @@ interface District {
   };
 }
 
+interface StateData {
+  code: string;
+  name: string;
+  displayName: string;
+  slug: string;
+  districtCount: number;
+  totalExpenditure: number;
+  totalHouseholdsWorked: number;
+  totalWorksCompleted: number;
+  totalPersonDays: number;
+  hasData: boolean;
+}
+
 interface HomePageClientProps {
   initialData: {
     districts: District[];
@@ -73,15 +89,25 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
   const [showBanner, setShowBanner] = useState(true);
   const [districts, setDistricts] = useState<District[]>(initialData.districts);
   const [stateStats, setStateStats] = useState(initialData.stateStats);
+  const [states, setStates] = useState<StateData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingStates, setIsLoadingStates] = useState(true);
   const [selectedState, setSelectedState] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentStatePage, setCurrentStatePage] = useState(1);
   const [pagination, setPagination] = useState({
     total: 0,
     totalPages: 1,
     hasMore: false
   });
   const { t } = useLanguage();
+
+  // Pagination for states
+  const statesPerPage = 12;
+  const totalStatePages = Math.ceil(states.length / statesPerPage);
+  const startIndex = (currentStatePage - 1) * statesPerPage;
+  const endIndex = startIndex + statesPerPage;
+  const paginatedStates = states.slice(startIndex, endIndex);
 
   // All 34 Indian States/UTs for the filter
   const allIndianStates = [
@@ -130,6 +156,24 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
     if (bannerDismissed === 'true') {
       setShowBanner(false);
     }
+  }, []);
+
+  // Fetch all states data
+  useEffect(() => {
+    setIsLoadingStates(true);
+    fetch('/api/states')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setStates(data.data);
+        }
+      })
+      .catch(error => {
+        console.error('❌ Failed to fetch states:', error);
+      })
+      .finally(() => {
+        setIsLoadingStates(false);
+      });
   }, []);
 
   // Fetch districts with pagination and filtering
@@ -200,26 +244,30 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
             <div className="flex items-start sm:items-center justify-center gap-2 sm:gap-3 text-white px-2 sm:px-4">
           <Globe className="h-5 w-5 flex-shrink-0 mt-0.5 sm:mt-0" />
           <span className="text-xs sm:text-sm md:text-base font-medium text-left sm:text-center leading-relaxed">
-            Now Available in English, Hindi, and Marathi. Just toggle the language selector in the header to switch!
+            Now Available in 9 Languages: English, Hindi, Marathi, Tamil, Telugu, Malayalam, Kannada, Bengali, and Gujarati. Use the language selector in the header!
           </span>
             </div>
           </StickyBanner>
         )}
 
         {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#E76D67' }}>
-        <div className="mx-auto max-w-6xl w-full">
-          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Maharashtra Map Illustration - Visible on all screens, positioned above on mobile */}
+      <section className="relative min-h-[90vh] flex items-center justify-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden" style={{ backgroundColor: '#E76D67' }}>
+        {/* Background gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E76D67]/90 via-[#E76D67] to-[#D65A54]"></div>
+        
+        <div className="mx-auto max-w-7xl w-full relative z-10">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+            {/* India Map Illustration - Visible on all screens, positioned above on mobile */}
             <div className="flex items-center justify-center w-full order-1 lg:order-none">
-              <div className="w-full max-w-[300px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-2xl">
-                {/* Maharashtra state map with glow effect */}
+              <div className="w-full max-w-[320px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-2xl">
+                {/* India national map with enhanced glow effect */}
                 <div className="relative">
-                  <div className="absolute inset-0 bg-white/10 rounded-full blur-3xl"></div>
+                  <div className="absolute inset-0 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
+                  <div className="absolute inset-0 bg-[#514E80]/10 rounded-full blur-2xl"></div>
                   <img 
-                    src="/Mah-dots.svg" 
-                    alt="Maharashtra Map" 
-                    className="w-full h-auto relative z-10 opacity-90 drop-shadow-lg"
+                    src="/india-hero-map.png" 
+                    alt="India Map" 
+                    className="w-full h-auto relative z-10 opacity-95 drop-shadow-2xl"
                   />
                 </div>
               </div>
@@ -228,94 +276,194 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
             {/* Content - Below illustration on mobile, right side on desktop */}
             <div className="space-y-6 sm:space-y-8 text-white text-center lg:text-left order-2 lg:order-none">
               <div className="space-y-4 sm:space-y-6">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
-                  {t('home.title.our')}{" "}
-                  <span className="block" style={{ color: '#252653' }}>
-                    {t('home.title.rights')}
-                  </span>
-                </h1>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
+                    Empowering{" "}
+                    <span className="block" style={{ color: '#252653' }}>
+                      Rural India
+                    </span>
+                  </h1>
+                </motion.div>
                 
-                <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white max-w-lg mx-auto lg:mx-0">
-                  {t('home.subtitle')}
-                </p>
+                <motion.p 
+                  className="text-lg sm:text-xl md:text-2xl leading-relaxed text-white/95 max-w-xl mx-auto lg:mx-0"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  Comprehensive MGNREGA data and insights from across India. Track employment, expenditure, and development works in real-time.
+                </motion.p>
               </div>
 
               {stateStats && (
-                <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-white">
+                <motion.div 
+                  className="flex items-center justify-center lg:justify-start gap-2 text-sm text-white/90"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
                   <Clock className="h-4 w-4" />
-                  <span>{t('home.lastUpdated')}: {formatDate(stateStats.lastUpdated)}</span>
-                </div>
+                  <span>Last Updated: {formatDate(stateStats.lastUpdated)}</span>
+                </motion.div>
               )}
 
               {/* CTA Buttons */}
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2 sm:pt-4">
+              <motion.div 
+                className="flex flex-wrap justify-center lg:justify-start gap-4 pt-2 sm:pt-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
                 <Link 
-                  href="#districts"
-                  className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-md font-semibold transition-colors border-2 border-white hover:bg-[#514E80] hover:text-white"
-                  style={{ borderColor: 'white' }}
+                  href="#states"
+                  className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-semibold transition-all border-2 border-white hover:bg-white hover:text-[#E76D67] transform hover:scale-105 shadow-lg"
                 >
-                  {t('home.exploreDistricts')}
+                  <MapPin className="h-4 w-4" />
+                  Explore by State
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link 
                   href="/compare"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-md font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
                   style={{ backgroundColor: '#514E80', color: 'white' }}
                 >
-                  {t('home.compareData')}
+                  <BarChart3 className="h-4 w-4" />
+                  Compare Data
                 </Link>
-              </div>
+              </motion.div>
+
+              {/* Quick Stats Bar */}
+              <motion.div 
+                className="grid grid-cols-3 gap-4 pt-6 border-t border-white/20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+              >
+                <div className="text-center lg:text-left">
+                  <div className="text-2xl sm:text-3xl font-bold text-white">36+</div>
+                  <div className="text-xs sm:text-sm text-white/80">States & UTs</div>
+                </div>
+                <div className="text-center lg:text-left">
+                  <div className="text-2xl sm:text-3xl font-bold text-white">600+</div>
+                  <div className="text-xs sm:text-sm text-white/80">Districts</div>
+                </div>
+                <div className="text-center lg:text-left">
+                  <div className="text-2xl sm:text-3xl font-bold text-white">Live</div>
+                  <div className="text-xs sm:text-sm text-white/80">Real-time Data</div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* State-Level Stats - Narrow Content */}
+      {/* National Stats - Showcase India-wide Impact */}
       {stateStats && (
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-          <div className="mx-auto max-w-5xl">
-            <div className="text-center mb-12">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+          <div className="mx-auto max-w-6xl">
+            <motion.div 
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
               <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
-                {t('home.maharashtraGlance')}
+                India's MGNREGA at a Glance
               </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                {t('home.maharashtraGlanceDesc').replace('{count}', stateStats.aggregates.totalDistricts)}
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Real-time insights from across the nation. Tracking progress, measuring impact, and empowering communities through transparent data.
               </p>
+            </motion.div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <StatCard
+                  title="Total Expenditure"
+                  value={formatIndianNumber(stateStats.aggregates.totalExpenditure)}
+                  subtitle={`Across ${stateStats.aggregates.totalDistricts} districts tracked`}
+                  icon={IndianRupee}
+                  className="border-l-4 border-brand hover:shadow-xl transition-shadow"
+                />
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <StatCard
+                  title="Households Employed"
+                  value={formatNumber(stateStats.aggregates.householdsWorked)}
+                  subtitle="Families provided livelihood"
+                  icon={Users}
+                  className="border-l-4 border-accent-purple hover:shadow-xl transition-shadow"
+                />
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <StatCard
+                  title="Works Completed"
+                  value={formatNumber(stateStats.aggregates.worksCompleted)}
+                  subtitle={`${formatNumber(stateStats.aggregates.worksOngoing)} currently ongoing`}
+                  icon={Briefcase}
+                  className="border-l-4 border-visuals-6 hover:shadow-xl transition-shadow"
+                />
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <StatCard
+                  title="Person-Days Generated"
+                  value={formatNumber(stateStats.aggregates.personDaysGenerated)}
+                  subtitle={`${formatNumber(stateStats.aggregates.womenPersonDays)} by women workers`}
+                  icon={TrendingUp}
+                  className="border-l-4 border-visuals-8 hover:shadow-xl transition-shadow"
+                />
+              </motion.div>
             </div>
 
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard
-                title={t('home.stats.expenditure')}
-                value={formatIndianNumber(stateStats.aggregates.totalExpenditure)}
-                subtitle={t('home.stats.acrossDistricts').replace('{count}', stateStats.aggregates.totalDistricts)}
-                icon={IndianRupee}
-                className="border-l-4 border-brand"
-              />
-              
-              <StatCard
-                title={t('home.stats.households')}
-                value={formatNumber(stateStats.aggregates.householdsWorked)}
-                subtitle={t('home.totalFamilies')}
-                icon={Users}
-                className="border-l-4 border-accent-purple"
-              />
-              
-              <StatCard
-                title={t('home.stats.works')}
-                value={formatNumber(stateStats.aggregates.worksCompleted)}
-                subtitle={`${formatNumber(stateStats.aggregates.worksOngoing)} ${t('home.inProgress')}`}
-                icon={Briefcase}
-                className="border-l-4 border-visuals-6"
-              />
-              
-              <StatCard
-                title={t('home.stats.personDays')}
-                value={formatNumber(stateStats.aggregates.personDaysGenerated)}
-                subtitle={`${formatNumber(stateStats.aggregates.womenPersonDays)} ${t('home.byWomen')}`}
-                icon={TrendingUp}
-                className="border-l-4 border-visuals-8"
-              />
-            </div>
+            {/* Impact Highlight */}
+            <motion.div 
+              className="mt-12 p-6 bg-white rounded-xl shadow-lg border border-gray-200"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-accent-purple/10 rounded-lg">
+                  <Shield className="h-6 w-6 text-accent-purple" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">The Right to Work Guarantee</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    MGNREGA (Mahatma Gandhi National Rural Employment Guarantee Act) provides a legal guarantee 
+                    for 100 days of employment in a financial year to adult members of rural households. 
+                    This data platform enables transparent monitoring of the scheme's implementation and impact across India.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </section>
       )}
@@ -477,6 +625,78 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
         </div>
       </section>
 
+      {/* Smart Search Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white border-t border-gray-100">
+        <div className="mx-auto max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-12"
+          >
+            <div className="inline-block px-4 py-2 bg-accent/10 rounded-full text-sm font-medium text-accent-purple mb-4">
+              <Search className="inline-block w-4 h-4 mr-2" />
+              Smart Search
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
+              Find Any District Instantly
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
+              Search across 740+ districts with our advanced search. Type to search or use voice input for hands-free experience.
+            </p>
+          </motion.div>
+
+          {/* Enhanced Search Bar */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-8"
+          >
+            <EnhancedSearch />
+          </motion.div>
+
+          {/* Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="grid md:grid-cols-3 gap-6 mt-12"
+          >
+            <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="p-2 bg-accent/10 rounded-lg">
+                <Search className="h-5 w-5 text-accent-purple" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Fuzzy Search</h3>
+                <p className="text-sm text-gray-600">Works even with typos and partial names</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="p-2 bg-accent/10 rounded-lg">
+                <Mic className="h-5 w-5 text-accent-purple" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Voice Input</h3>
+                <p className="text-sm text-gray-600">Click the mic icon and speak the district name</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="p-2 bg-accent/10 rounded-lg">
+                <ArrowRight className="h-5 w-5 text-accent-purple" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Quick Navigation</h3>
+                <p className="text-sm text-gray-600">Use keyboard arrows and Enter to navigate</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Interactive India Map Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
         <div className="mx-auto max-w-7xl">
@@ -540,51 +760,265 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
         </div>
       </section>
 
+      {/* State Statistics Grid Section */}
+      <section id="states" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
+        <div className="mx-auto max-w-7xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-12"
+          >
+            <div className="inline-block px-4 py-2 bg-accent/10 rounded-full text-sm font-medium text-accent-purple mb-4">
+              <MapPin className="inline-block w-4 h-4 mr-2" />
+              Explore by State
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
+              State-wise MGNREGA Performance
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Browse through all {states.length} states and Union Territories to view detailed employment and expenditure metrics
+            </p>
+          </motion.div>
+
+          {isLoadingStates ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-accent-purple"></div>
+              <p className="text-lg text-gray-600 mt-4">Loading states...</p>
+            </div>
+          ) : (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              >
+                {paginatedStates.map((state, index) => (
+                <motion.div
+                  key={state.code}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.02 }}
+                >
+                  <Link href={`/state/${state.slug}`}>
+                    <div className={`group relative p-6 bg-white rounded-xl border transition-all duration-300 cursor-pointer overflow-hidden ${
+                      state.hasData 
+                        ? 'border-gray-200 hover:border-accent-purple hover:shadow-xl' 
+                        : 'border-gray-100 opacity-60 hover:opacity-100'
+                    }`}>
+                      {/* Background gradient on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      
+                      <div className="relative z-10">
+                        {/* State header */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-accent-purple transition-colors line-clamp-2">
+                              {state.displayName}
+                            </h3>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {state.districtCount > 0 ? `${state.districtCount} districts` : 'No data available'}
+                            </p>
+                          </div>
+                          <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-accent-purple group-hover:translate-x-1 transition-all flex-shrink-0 ml-2" />
+                        </div>
+
+                        {/* Key metrics */}
+                        {state.hasData ? (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <IndianRupee className="h-4 w-4 text-green-600" />
+                                <span>Expenditure</span>
+                              </div>
+                              <span className="text-sm font-semibold text-gray-900">
+                                {formatIndianNumber(state.totalExpenditure)}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Users className="h-4 w-4 text-blue-600" />
+                                <span>Households</span>
+                              </div>
+                              <span className="text-sm font-semibold text-gray-900">
+                                {formatNumber(state.totalHouseholdsWorked)}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Briefcase className="h-4 w-4 text-purple-600" />
+                                <span>Works</span>
+                              </div>
+                              <span className="text-sm font-semibold text-gray-900">
+                                {formatNumber(state.totalWorksCompleted)}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="py-4 text-center">
+                            <p className="text-sm text-gray-400">Data coming soon</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Pagination */}
+            {totalStatePages > 1 && (
+              <div className="mt-12 flex flex-col items-center gap-4">
+                <div className="text-sm text-gray-600">
+                  Showing {((currentStatePage - 1) * statesPerPage) + 1}-{Math.min(currentStatePage * statesPerPage, states.length)} of {states.length} states
+                </div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => {
+                          if (currentStatePage > 1) {
+                            setCurrentStatePage(currentStatePage - 1);
+                            document.getElementById('states')?.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}
+                        className={currentStatePage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-accent-purple/10'}
+                      />
+                    </PaginationItem>
+
+                    {/* Sliding window pagination */}
+                    {(() => {
+                      const maxVisiblePages = 5;
+                      let startPage = Math.max(1, currentStatePage - Math.floor(maxVisiblePages / 2));
+                      let endPage = Math.min(totalStatePages, startPage + maxVisiblePages - 1);
+                      
+                      if (endPage - startPage + 1 < maxVisiblePages) {
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                      }
+
+                      const pages = [];
+                      
+                      if (startPage > 1) {
+                        pages.push(
+                          <PaginationItem key={1}>
+                            <PaginationLink
+                              onClick={() => {
+                                setCurrentStatePage(1);
+                                document.getElementById('states')?.scrollIntoView({ behavior: 'smooth' });
+                              }}
+                              className="cursor-pointer hover:bg-accent-purple/10"
+                            >
+                              1
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                        if (startPage > 2) {
+                          pages.push(
+                            <PaginationItem key="ellipsis-start">
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
+                      }
+
+                      for (let i = startPage; i <= endPage; i++) {
+                        pages.push(
+                          <PaginationItem key={i}>
+                            <PaginationLink
+                              onClick={() => {
+                                setCurrentStatePage(i);
+                                document.getElementById('states')?.scrollIntoView({ behavior: 'smooth' });
+                              }}
+                              isActive={currentStatePage === i}
+                              className={`cursor-pointer ${
+                                currentStatePage === i
+                                  ? 'bg-accent-purple text-white hover:bg-accent-purple/90'
+                                  : 'hover:bg-accent-purple/10'
+                              }`}
+                            >
+                              {i}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+
+                      if (endPage < totalStatePages) {
+                        if (endPage < totalStatePages - 1) {
+                          pages.push(
+                            <PaginationItem key="ellipsis-end">
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
+                        pages.push(
+                          <PaginationItem key={totalStatePages}>
+                            <PaginationLink
+                              onClick={() => {
+                                setCurrentStatePage(totalStatePages);
+                                document.getElementById('states')?.scrollIntoView({ behavior: 'smooth' });
+                              }}
+                              className="cursor-pointer hover:bg-accent-purple/10"
+                            >
+                              {totalStatePages}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+
+                      return pages;
+                    })()}
+
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => {
+                          if (currentStatePage < totalStatePages) {
+                            setCurrentStatePage(currentStatePage + 1);
+                            document.getElementById('states')?.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}
+                        className={currentStatePage === totalStatePages ? 'pointer-events-none opacity-50' : 'cursor-pointer hover:bg-accent-purple/10'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
+          )}
+        </div>
+      </section>
+
       {/* Districts Section */}
-      <section id="districts" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+      {/* <section id="districts" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
         <div className="mx-auto max-w-6xl space-y-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
-              {t('home.districts.title')}
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-4">
-              Showing {districts.length} of {pagination.total} districts
-            </p>
-            
-            {/* Filters */}
-            <div className="max-w-4xl mx-auto mb-8 space-y-4">
-              <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-                {/* Search Bar */}
-                <div className="flex-1">
-                  <SearchBar 
-                    onSearch={handleSearchChange} 
-                    placeholder={t('home.search.placeholder')} 
-                  />
-                </div>
-                
-                {/* State Filter */}
-                <div className="w-full sm:w-64">
-                  <Select value={selectedState} onValueChange={handleStateChange}>
-                    <SelectTrigger className="w-full h-10">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="All States" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All States ({pagination.total})</SelectItem>
-                      {allIndianStates.map((state) => (
-                        <SelectItem key={state} value={state}>
-                          {state}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
+                <MapPin className="inline-block w-4 h-4 mr-2" />
+                Latest Updates
               </div>
-            </div>
-          </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
+                Recently Updated Districts
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Browse the latest MGNREGA data from districts across India
+              </p>
+            </motion.div>
+          </div> */}
 
           {/* Loading State */}
-          {isLoading ? (
+          {/* {isLoading ? (
             <div className="text-center py-12">
               <p className="text-lg text-gray-600">Loading districts...</p>
             </div>
@@ -594,10 +1028,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                 {districts.map((district: District) => (
                   <DistrictCard key={district.id} district={district} />
                 ))}
-              </div>
+              </div> */}
 
               {/* Pagination */}
-              {pagination.totalPages > 1 && (
+              {/* {pagination.totalPages > 1 && (
                 <div className="mt-12 flex justify-center">
                   <Pagination>
                     <PaginationContent>
@@ -606,10 +1040,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                           className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                         />
-                      </PaginationItem>
+                      </PaginationItem> */}
                       
                       {/* Sliding window pagination logic */}
-                      {(() => {
+                      {/* {(() => {
                         const totalPages = pagination.totalPages;
                         const windowSize = 5;
                         let startPage = Math.max(1, currentPage - 2);
@@ -699,7 +1133,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
             </div>
           )}
         </div>
-      </section>
+      </section> */}
 
       {/* Footer - Simplified Tattle Style */}
       <footer className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8 border-t">

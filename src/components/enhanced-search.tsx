@@ -54,22 +54,56 @@ export function EnhancedSearch({
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.lang = "en-IN"; // Indian English
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+          console.log('Voice recognition started');
+          setIsListening(true);
+        };
 
         recognition.onresult = (event: any) => {
+          console.log('Voice recognition result received');
           const transcript = event.results[0][0].transcript;
           setQuery(transcript);
           setIsListening(false);
         };
 
-        recognition.onerror = () => {
+        recognition.onerror = (event: any) => {
+          console.error("Speech recognition error:", event.error);
           setIsListening(false);
+          
+          // Show user-friendly error message based on error type
+          switch (event.error) {
+            case 'not-allowed':
+            case 'permission-denied':
+              // For Chrome/Edge on localhost, this might be a browser setting issue
+              alert('⚠️ Microphone Access Blocked\n\nPlease ensure:\n1. You are using HTTPS or localhost\n2. Click the 🔒 or 🎤 icon in the address bar\n3. Set microphone permission to "Allow"\n4. Reload the page and try again\n\nIf using Chrome, check: chrome://settings/content/microphone');
+              break;
+            case 'no-speech':
+              alert('No speech detected. Please try again and speak clearly.');
+              break;
+            case 'audio-capture':
+              alert('No microphone found. Please check that your microphone is connected and try again.');
+              break;
+            case 'network':
+              alert('Network error occurred. Please check your internet connection.');
+              break;
+            default:
+              // Don't show alert for other errors (like 'aborted') as they're usually intentional
+              if (event.error !== 'aborted') {
+                console.warn('Speech recognition error:', event.error);
+              }
+          }
         };
 
         recognition.onend = () => {
+          console.log('Voice recognition ended');
           setIsListening(false);
         };
 
         recognitionRef.current = recognition;
+      } else {
+        console.warn('Speech Recognition API not supported in this browser');
       }
     }
   }, []);
@@ -134,15 +168,75 @@ export function EnhancedSearch({
   }, [query]);
 
   // Handle voice input
-  const toggleVoiceInput = useCallback(() => {
-    if (!recognitionRef.current) return;
+  const toggleVoiceInput = useCallback(async () => {
+    if (!recognitionRef.current) {
+      alert('Voice recognition is not supported in your browser. Please use Chrome, Edge, or Safari.');
+      return;
+    }
 
     if (isListening) {
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.error('Error stopping recognition:', e);
+      }
       setIsListening(false);
-    } else {
-      recognitionRef.current.start();
-      setIsListening(true);
+      return;
+    }
+
+    // First, explicitly request microphone permission via getUserMedia
+    // This ensures the browser shows the permission prompt
+    try {
+      console.log('Requesting microphone permission...');
+      
+      // Check if getUserMedia is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        // Fallback: try starting recognition directly
+        console.log('getUserMedia not available, trying direct recognition start');
+        recognitionRef.current.start();
+        return;
+      }
+
+      // Request microphone access - this WILL show the browser permission prompt
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100
+        } 
+      });
+      
+      console.log('Microphone permission granted!');
+      
+      // Stop the test stream immediately
+      stream.getTracks().forEach(track => track.stop());
+      
+      // Now start speech recognition
+      try {
+        recognitionRef.current.start();
+        console.log('Speech recognition started successfully');
+      } catch (startError: any) {
+        console.error('Error starting recognition after permission:', startError);
+        if (startError.message && startError.message.includes('already started')) {
+          setIsListening(true);
+        } else {
+          throw startError;
+        }
+      }
+      
+    } catch (error: any) {
+      console.error("Error with voice input:", error);
+      setIsListening(false);
+      
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        alert('⚠️ Microphone Permission Denied\n\nTo use voice search:\n\n1. Look for the 🔒 or 🎤 icon in your browser\'s address bar\n2. Click it and set Microphone to "Allow"\n3. Refresh the page\n4. Try voice search again\n\nChrome users: Also check chrome://settings/content/microphone');
+      } else if (error.name === 'NotFoundError') {
+        alert('No microphone detected. Please connect a microphone and try again.');
+      } else if (error.name === 'NotReadableError') {
+        alert('Microphone is being used by another application. Please close other apps using the microphone and try again.');
+      } else {
+        alert(`Voice search error: ${error.message || 'Unknown error'}. Please check your browser settings.`);
+      }
     }
   }, [isListening]);
 
@@ -189,7 +283,7 @@ export function EnhancedSearch({
   // Handle result selection
   const handleSelectResult = useCallback((result: SearchResult) => {
     if (result.type === "district") {
-      router.push(`/district/${result.stateCode.toLowerCase()}/${result.code.toLowerCase()}`);
+      router.push(`/district/${result.id}`);
     }
     setQuery("");
     setIsOpen(false);
@@ -277,18 +371,25 @@ export function EnhancedSearch({
             <button
               onClick={toggleVoiceInput}
               className={cn(
-                "p-2 rounded-md transition-colors touch-manipulation",
+                "p-2 rounded-md transition-colors touch-manipulation relative group",
                 isListening 
                   ? "bg-red-500 text-white hover:bg-red-600" 
                   : "hover:bg-muted text-muted-foreground"
               )}
-              aria-label={isListening ? "Stop voice input" : "Start voice input"}
+              aria-label={isListening ? "Stop voice input" : "Start voice input - requires microphone permission"}
               type="button"
+              title={isListening ? "Click to stop voice input" : "Click to start voice search (microphone permission required)"}
             >
               {isListening ? (
                 <MicOff className="h-5 w-5" aria-hidden="true" />
               ) : (
                 <Mic className="h-5 w-5" aria-hidden="true" />
+              )}
+              {/* Tooltip */}
+              {!isListening && (
+                <span className="absolute bottom-full right-0 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  Voice Search
+                </span>
               )}
             </button>
           )}
