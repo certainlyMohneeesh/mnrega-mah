@@ -16,13 +16,12 @@ This application provides real-time insights into MGNREGA implementation across 
 - ✅ **Offline Mode**: PWA with service worker and IndexedDB caching
 - ✅ **Audio Summaries**: Text-to-speech for low-literacy users
 - ✅ **Responsive Design**: Mobile-first, accessible UI
-- ✅ **Redis Caching**: High-performance data caching with TTL
 - ✅ **Rate Limiting**: Protection against API throttling
 
 ## 📦 Tech Stack
 
 - **Frontend**: Next.js 16, TypeScript, TailwindCSS, Shadcn UI, Recharts, Framer Motion
-- **Backend**: Next.js API Routes, PostgreSQL (Supabase), Prisma, Redis
+**Backend**: Next.js API Routes, PostgreSQL (Supabase), Prisma
 - **i18n**: next-intl (Marathi, Hindi, English)
 - **Deployment**: Vercel
 - **Monitoring**: Sentry
@@ -32,7 +31,6 @@ This application provides real-time insights into MGNREGA implementation across 
 ### Prerequisites
 - Node.js 20+ and pnpm 8+
 - PostgreSQL database (Supabase)
-- Redis instance
 - Data.gov.in API key (provided)
 
 ### Step 1: Install Dependencies
@@ -53,7 +51,6 @@ cp .env.example .env
 
 # Edit .env with your credentials:
 # - DATABASE_URL: Supabase PostgreSQL connection
-# - REDIS_URL: Redis instance URL
 # - DATA_GOV_API_KEY: Already set (579b464db66ec23bdd0000011b14954939de4eed5265d7c08c0b8631)
 ```
 
@@ -99,7 +96,7 @@ mgnrega/
 │   │   ├── api/        # API routes
 │   │   └── [locale]/   # Localized pages
 │   ├── components/ui/  # Shadcn components
-│   ├── lib/            # Utilities (prisma, redis, utils)
+│   ├── lib/            # Utilities (prisma, utils)
 │   └── middleware.ts   # i18n middleware
 ├── messages/           # Translations (mr, hi, en)
 └── public/            # Static assets & PWA manifest
@@ -135,7 +132,6 @@ pnpm test:coverage     # Coverage report
 ```
 DATABASE_URL=<supabase-connection-string>
 DIRECT_URL=<supabase-direct-connection>
-REDIS_URL=<redis-connection-string>
 SENTRY_DSN=<your-sentry-dsn>
 CRON_SECRET=<random-secret>
 NODE_ENV=production
@@ -169,15 +165,6 @@ on:
 ### Fetch Logs Table
 - Audit trail of all data ingestion operations
 
-## 📊 Cache Strategy
-
-Redis keys with TTL:
-- `districts:all` (24h)
-- `district:<id>:latest` (12h)
-- `district:<id>:history:<from>:<to>` (6h)
-- `compare:<d1>:<d2>:<metric>` (6h)
-- `state:MH:latest` (12h)
-
 Auto-invalidation after data ingestion.
 
 ## 🐛 Troubleshooting
@@ -187,8 +174,6 @@ Auto-invalidation after data ingestion.
 pnpm prisma generate
 ```
 
-**Redis Connection Issues?**
-App works without Redis but caching will be disabled.
 
 **API Rate Limits?**
 Ingestion script has exponential backoff and retry logic.
@@ -198,7 +183,6 @@ Ingestion script has exponential backoff and retry logic.
 ### Completed ✓
 - [x] Project scaffold & configuration
 - [x] Prisma schema & database setup
-- [x] Redis caching layer
 - [x] Data ingestion script with retry logic
 - [x] Complete API routes with caching
 - [x] i18n with 3 languages (25+ strings)

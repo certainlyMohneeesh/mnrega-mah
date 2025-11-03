@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCached, setCached, CacheKeys, CacheTTL } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -27,24 +26,7 @@ export async function GET(
       );
     }
 
-    // Try to get from cache
-    const cacheKey = CacheKeys.DISTRICT_BY_ID(id);
-    const cached = await getCached<any>(cacheKey);
-
-    if (cached) {
-      // Verify cached data has metrics
-      if (cached.metrics && cached.metrics.length > 0) {
-        return NextResponse.json({
-          success: true,
-          data: cached,
-          cached: true,
-        });
-      }
-      // Invalid cache, don't return it
-      console.warn(`⚠️ Cached district ${id} has no metrics, refetching`);
-    }
-
-    // First, check if district exists at all
+    // Fetch district from database
     const district = await prisma.district.findUnique({
       where: { id },
       include: {
@@ -75,15 +57,11 @@ export async function GET(
       // This is better than 404
     }
 
-    // Cache the valid response
-    await setCached(cacheKey, district, CacheTTL.DISTRICT_DETAIL);
-
     console.log(`✅ Successfully fetched district ${district.name} with ${district.metrics.length} metrics`);
 
     return NextResponse.json({
       success: true,
       data: district,
-      cached: false,
     });
   } catch (error) {
     console.error(`❌ Error fetching district:`, error);

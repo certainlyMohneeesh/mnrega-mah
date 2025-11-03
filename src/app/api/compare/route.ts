@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCached, setCached, CacheKeys, CacheTTL } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -25,18 +24,6 @@ export async function GET(request: NextRequest) {
         },
         { status: 400 }
       );
-    }
-
-    // Try to get from cache
-    const cacheKey = CacheKeys.COMPARE(d1, d2, metric);
-    const cached = await getCached<any>(cacheKey);
-
-    if (cached) {
-      return NextResponse.json({
-        success: true,
-        data: cached,
-        cached: true,
-      });
     }
 
     // Fetch both districts
@@ -116,13 +103,9 @@ export async function GET(request: NextRequest) {
       },
     };
 
-    // Cache the response
-    await setCached(cacheKey, response, CacheTTL.COMPARISON);
-
     return NextResponse.json({
       success: true,
       data: response,
-      cached: false,
     });
   } catch (error) {
     console.error("❌ Error comparing districts:", error);

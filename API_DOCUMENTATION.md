@@ -1,7 +1,7 @@
 # Maharashtra MGNREGA Dashboard - API Documentation
 
 ## Overview
-Production-ready REST API for Maharashtra MGNREGA (Mahatma Gandhi National Rural Employment Guarantee Act) data dashboard. Built with Next.js 15, TypeScript, Prisma, PostgreSQL, and Redis caching.
+Production-ready REST API for Maharashtra MGNREGA (Mahatma Gandhi National Rural Employment Guarantee Act) data dashboard. Built with Next.js 15, TypeScript, Prisma, PostgreSQ.
 
 ## Database Status
 - **Districts**: 34 Maharashtra districts
@@ -249,7 +249,6 @@ Response Example:
 
 ## Caching Strategy
 
-All endpoints use Redis caching with the following TTLs:
 - **District List**: 5 minutes
 - **Latest Metrics**: 2 minutes
 - **Historical Data**: 10 minutes
@@ -283,7 +282,6 @@ HTTP Status Codes:
 
 - **Response Time**: < 100ms (cached), < 500ms (database)
 - **Data Freshness**: Real-time from database
-- **Scalability**: Handles 1000+ req/sec with Redis
 - **Database Queries**: Optimized with proper indexes
 
 ---
