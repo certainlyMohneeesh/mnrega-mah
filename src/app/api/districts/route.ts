@@ -35,11 +35,14 @@ export async function GET(request: NextRequest) {
       };
     }
     if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { code: { contains: search, mode: 'insensitive' } },
-        { stateName: { contains: search, mode: 'insensitive' } }
-      ];
+        const orClauses: Array<{ name?: any; code?: any; stateName?: any }> = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { code: { contains: search, mode: 'insensitive' } },
+              ];
+              if (!stateName) {
+                orClauses.push({ stateName: { contains: search, mode: 'insensitive' } });
+              }
+              where.OR = orClauses;
     }
 
     // Calculate pagination

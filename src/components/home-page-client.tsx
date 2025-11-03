@@ -580,37 +580,79 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                         />
                       </PaginationItem>
                       
-                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                        const page = i + 1;
-                        return (
-                          <PaginationItem key={page}>
-                            <PaginationLink
-                              onClick={() => setCurrentPage(page)}
-                              isActive={currentPage === page}
-                              className="cursor-pointer"
-                            >
-                              {page}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
-                      })}
-                      
-                      {pagination.totalPages > 5 && (
-                        <>
-                          <PaginationItem>
-                            <PaginationEllipsis />
-                          </PaginationItem>
-                          <PaginationItem>
-                            <PaginationLink
-                              onClick={() => setCurrentPage(pagination.totalPages)}
-                              isActive={currentPage === pagination.totalPages}
-                              className="cursor-pointer"
-                            >
-                              {pagination.totalPages}
-                            </PaginationLink>
-                          </PaginationItem>
-                        </>
-                      )}
+                      {/* Sliding window pagination logic */}
+                      {(() => {
+                        const totalPages = pagination.totalPages;
+                        const windowSize = 5;
+                        let startPage = Math.max(1, currentPage - 2);
+                        let endPage = Math.min(totalPages, currentPage + 2);
+                        // Adjust window if at the start or end
+                        if (currentPage <= 3) {
+                          startPage = 1;
+                          endPage = Math.min(totalPages, windowSize);
+                        } else if (currentPage >= totalPages - 2) {
+                          endPage = totalPages;
+                          startPage = Math.max(1, totalPages - windowSize + 1);
+                        }
+                        const pages = [];
+                        // Show first page and ellipsis if needed
+                        if (startPage > 1) {
+                          pages.push(
+                            <PaginationItem key={1}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(1)}
+                                isActive={currentPage === 1}
+                                className="cursor-pointer"
+                              >
+                                1
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                          if (startPage > 2) {
+                            pages.push(
+                              <PaginationItem key="start-ellipsis">
+                                <PaginationEllipsis />
+                              </PaginationItem>
+                            );
+                          }
+                        }
+                        // Window of pages
+                        for (let page = startPage; page <= endPage; page++) {
+                          pages.push(
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        }
+                        // Show ellipsis and last page if needed
+                        if (endPage < totalPages) {
+                          if (endPage < totalPages - 1) {
+                            pages.push(
+                              <PaginationItem key="end-ellipsis">
+                                <PaginationEllipsis />
+                              </PaginationItem>
+                            );
+                          }
+                          pages.push(
+                            <PaginationItem key={totalPages}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(totalPages)}
+                                isActive={currentPage === totalPages}
+                                className="cursor-pointer"
+                              >
+                                {totalPages}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        }
+                        return pages;
+                      })()}
                       
                       <PaginationItem>
                         <PaginationNext 
