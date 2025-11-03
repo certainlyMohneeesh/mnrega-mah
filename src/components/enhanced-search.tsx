@@ -242,33 +242,73 @@ export function EnhancedSearch({
 
   // Keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      // Open dropdown on ArrowDown when closed
+      if (e.key === "ArrowDown" && results.length > 0) {
+        e.preventDefault();
+        setIsOpen(true);
+        setSelectedIndex(0);
+      }
+      return;
+    }
 
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
+        setSelectedIndex(prev => {
+          const newIndex = prev < results.length - 1 ? prev + 1 : 0; // Wrap around
+          return newIndex;
+        });
         break;
+      
       case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+        setSelectedIndex(prev => {
+          if (prev <= 0) return results.length - 1; // Wrap to last
+          return prev - 1;
+        });
         break;
+      
+      case "Home":
+        e.preventDefault();
+        setSelectedIndex(0);
+        break;
+      
+      case "End":
+        e.preventDefault();
+        setSelectedIndex(results.length - 1);
+        break;
+      
       case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0 && results[selectedIndex]) {
-          handleSelectResult(results[selectedIndex]);
-        } else if (onSearch) {
+          const result = results[selectedIndex];
+          if (result.type === "district") {
+            router.push(`/district/${result.id}`);
+          }
+          setQuery("");
+          setIsOpen(false);
+          setSelectedIndex(-1);
+        } else if (onSearch && query) {
           onSearch(query);
           setIsOpen(false);
         }
         break;
+      
       case "Escape":
         e.preventDefault();
         setIsOpen(false);
         setSelectedIndex(-1);
+        inputRef.current?.blur(); // Remove focus
+        break;
+      
+      case "Tab":
+        // Allow Tab to close dropdown and move to next element
+        setIsOpen(false);
+        setSelectedIndex(-1);
         break;
     }
-  }, [isOpen, results, selectedIndex, query, onSearch]);
+  }, [isOpen, results, selectedIndex, query, onSearch, router]);
 
   // Scroll selected item into view
   useEffect(() => {
@@ -404,6 +444,28 @@ export function EnhancedSearch({
           role="listbox"
           className="absolute z-50 w-full mt-2 bg-background border-2 border-input rounded-lg shadow-lg max-h-96 overflow-y-auto"
         >
+          {/* Keyboard Navigation Hint */}
+          <div className="sticky top-0 bg-muted/80 backdrop-blur-sm px-4 py-2 text-xs text-muted-foreground border-b border-border flex items-center gap-4 flex-wrap z-10">
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-xs font-mono">↑</kbd>
+              <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-xs font-mono">↓</kbd>
+              Navigate
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-xs font-mono">Enter</kbd>
+              Select
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-xs font-mono">Esc</kbd>
+              Close
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-xs font-mono">Home</kbd>
+              <kbd className="px-1.5 py-0.5 bg-background border border-border rounded text-xs font-mono">End</kbd>
+              First/Last
+            </span>
+          </div>
+          
           {results.map((result, index) => (
             <button
               key={result.id}
