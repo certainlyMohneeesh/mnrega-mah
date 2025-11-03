@@ -8,6 +8,7 @@ import { StatCard } from "@/components/stat-card";
 import { DistrictCard } from "@/components/district-card";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { LocationDetector } from "@/components/location-detector";
+import { InteractiveIndiaMap } from "@/components/interactive-india-map";
 import {
   Select,
   SelectContent,
@@ -509,6 +510,69 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
               </p>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Interactive India Map Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
+                <MapPin className="inline-block w-4 h-4 mr-2" />
+                Explore by State
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
+                Navigate India's MGNREGA Data
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Click on any state to explore detailed district-level employment and expenditure data across all 36 Indian states and Union Territories
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Interactive Map */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <InteractiveIndiaMap className="mb-8" />
+          </motion.div>
+
+          {/* Quick Stats about all states */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-center mt-12"
+          >
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              <div className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl">
+                <div className="text-3xl font-bold text-primary mb-2">36</div>
+                <div className="text-sm text-muted-foreground">States & UTs</div>
+              </div>
+              <div className="p-6 bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl">
+                <div className="text-3xl font-bold text-accent-purple mb-2">740+</div>
+                <div className="text-sm text-muted-foreground">Total Districts</div>
+              </div>
+              <div className="p-6 bg-gradient-to-br from-visuals-6/5 to-visuals-6/10 rounded-xl">
+                <div className="text-3xl font-bold text-visuals-6 mb-2">14K+</div>
+                <div className="text-sm text-muted-foreground">Data Points</div>
+              </div>
+              <div className="p-6 bg-gradient-to-br from-visuals-8/5 to-visuals-8/10 rounded-xl">
+                <div className="text-3xl font-bold text-visuals-8 mb-2">Live</div>
+                <div className="text-sm text-muted-foreground">Real-time Updates</div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 

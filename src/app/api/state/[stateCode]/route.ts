@@ -10,13 +10,15 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { stateCode: string } }
+  context: any
 ) {
   try {
-    const { stateCode } = params;
+    // Next.js may pass `params` as a Promise in app route handlers — unwrap safely
+    const params = await (context?.params ?? {});
+    const { stateCode } = params as { stateCode?: string };
     
     // Validate and get state info
-    const stateInfo = getStateBySlug(stateCode);
+  const stateInfo = stateCode ? getStateBySlug(stateCode) : undefined;
     if (!stateInfo) {
       return NextResponse.json(
         {

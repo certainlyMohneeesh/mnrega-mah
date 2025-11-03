@@ -10,17 +10,19 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { stateCode: string } }
+  context: any
 ) {
   try {
-    const { stateCode } = params;
+    // Next.js may pass `params` as a Promise in app route handlers — unwrap safely
+    const params = await (context?.params ?? {});
+    const { stateCode } = params as { stateCode?: string };
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "15");
     const search = searchParams.get("search");
 
     // Validate and get state info
-    const stateInfo = getStateBySlug(stateCode);
+  const stateInfo = stateCode ? getStateBySlug(stateCode) : undefined;
     if (!stateInfo) {
       return NextResponse.json(
         {
