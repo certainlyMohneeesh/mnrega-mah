@@ -1702,7 +1702,7 @@ SOFTWARE.
 
 ## 👥 Authors
 
-**Mohneeesh Chandoliya** - [@certainlyMohneeesh](https://github.com/certainlyMohneeesh)
+**Mohneeesh Naidu** - [@certainlyMohneeesh](https://github.com/certainlyMohneeesh)
 
 ---
 
