@@ -29,7 +29,7 @@ Your workflow file should use:
       -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
       -H "Content-Type: application/json" \
       -w "\nHTTP_STATUS:%{http_code}" \
-      "https://mnrega-mah.vercel.app/api/cron/daily-sync-optimized")
+      "https://your.vercel.app/api/cron/daily-sync-optimized")
     
     http_status=$(echo "$response" | grep "HTTP_STATUS" | cut -d: -f2)
     body=$(echo "$response" | sed '/HTTP_STATUS/d')
@@ -47,7 +47,7 @@ Your workflow file should use:
 ```
 
 **Key Points:**
-- ✅ URL: `https://mnrega-mah.vercel.app/api/cron/daily-sync-optimized`
+- ✅ URL: `https://your.vercel.app/api/cron/daily-sync-optimized`
 - ✅ Auth: `Authorization: Bearer ${{ secrets.CRON_SECRET }}`
 - ✅ Method: `GET`
 
@@ -57,8 +57,8 @@ Your workflow file should use:
 
 Make sure these are set in your GitHub repository:
 
-1. Go to: `https://github.com/certainlyMohneeesh/mnrega-mah/settings/secrets/actions`
-2. Add secret: `CRON_SECRET` = `22Cmyth0315`
+1. Go to: `https://github.com/settings/secrets/actions`
+2. Add secret: `CRON_SECRET` = `your-secret-here`
 
 ---
 
@@ -96,12 +96,12 @@ export CRON_SECRET="22Cmyth0315"
 
 # Test health check
 curl -H "Authorization: Bearer $CRON_SECRET" \
-  https://mnrega-mah.vercel.app/api/cron/daily-sync-optimized/health
+  https://your.vercel.app/api/cron/daily-sync-optimized/health
 
 # Run full sync (takes 5-15 minutes)
 curl -X GET \
   -H "Authorization: Bearer $CRON_SECRET" \
-  https://mnrega-mah.vercel.app/api/cron/daily-sync-optimized
+  https://yours.vercel.app/api/cron/daily-sync-optimized
 ```
 
 ---

@@ -15,7 +15,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "sync:cli": "tsx scripts/daily-sync.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",

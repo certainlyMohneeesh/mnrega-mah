@@ -4,42 +4,103 @@ on:
   schedule:
     # Run every day at 1:00 AM IST (19:30 UTC previous day)
     - cron: '30 19 * * *'
-  workflow_dispatch: # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      resume_from_state:
+        description: 'Resume from state (optional, e.g., MAHARASHTRA)'
+        required: false
+        type: string
 
 jobs:
   sync-data:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Trigger Optimized Daily Sync API
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
+      - name: Run optimized daily sync
+        id: sync
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+          BATCH_SIZE: '500'
+          RESUME_FROM_STATE: ${{ github.event.inputs.resume_from_state }}
         run: |
           echo "🔄 Starting optimized daily MGNREGA data sync..."
           echo "📊 Syncing previous + current financial year for all 34 states"
           
-          response=$(curl -X GET \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            -H "Content-Type: application/json" \
-            -w "\nHTTP_STATUS:%{http_code}" \
-            "${{ secrets.VERCEL_DEPLOYMENT_URL }}/api/cron/daily-sync-optimized")
-          
-          http_status=$(echo "$response" | grep "HTTP_STATUS" | cut -d: -f2)
-          body=$(echo "$response" | sed '/HTTP_STATUS/d')
-          
-          echo "Response: $body"
-          echo "HTTP Status: $http_status"
-          
-          if [ "$http_status" != "200" ]; then
-            echo "❌ Sync failed with status $http_status"
-            exit 1
+          if [ -n "$RESUME_FROM_STATE" ]; then
+            echo "🔁 Resuming from state: $RESUME_FROM_STATE"
+            pnpm run sync:cli --from-state="$RESUME_FROM_STATE" 2>&1 | tee sync-output.log
+          else
+            echo "🆕 Starting fresh sync from first state"
+            pnpm run sync:cli 2>&1 | tee sync-output.log
           fi
           
-          echo "✅ Optimized sync completed successfully"
+          EXIT_CODE=${PIPESTATUS[0]}
+          
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ Sync completed successfully"
+          else
+            echo "❌ Sync failed with exit code $EXIT_CODE"
+            exit $EXIT_CODE
+          fi
+
+      - name: Generate sync summary
+        if: always()
+        run: |
+          echo "# Daily Sync Summary" > sync-summary.md
+          echo "" >> sync-summary.md
+          echo "**Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> sync-summary.md
+          echo "**Workflow:** ${{ github.workflow }}" >> sync-summary.md
+          echo "**Run ID:** ${{ github.run_id }}" >> sync-summary.md
+          
+          if [ -n "${{ github.event.inputs.resume_from_state }}" ]; then
+            echo "**Resume From:** ${{ github.event.inputs.resume_from_state }}" >> sync-summary.md
+          else
+            echo "**Mode:** Full sync" >> sync-summary.md
+          fi
+          
+          echo "" >> sync-summary.md
+          echo "## Log Output (Last 100 lines)" >> sync-summary.md
+          echo "\`\`\`" >> sync-summary.md
+          if [ -f sync-output.log ]; then
+            tail -n 100 sync-output.log >> sync-summary.md
+          else
+            echo "No log output available" >> sync-summary.md
+          fi
+          echo "\`\`\`" >> sync-summary.md
+
+      - name: Upload sync logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-logs-${{ github.run_id }}
+          path: |
+            sync-output.log
+            sync-summary.md
+          retention-days: 30
 
       - name: Send notification on failure
         if: failure()
         run: |
           echo "❌ Daily sync failed! Check the logs above."
-          # You can add Slack/Email notification here
+          echo "📊 Last processed state might be in the logs."
+          echo "💡 To resume: Go to Actions → Daily MGNREGA Data Sync → Run workflow → Enter last successful state"
