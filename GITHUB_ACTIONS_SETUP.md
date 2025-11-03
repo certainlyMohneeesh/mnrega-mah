@@ -23,7 +23,7 @@ postgresql://postgres.[project]:[password]@aws-0-ap-south-1.pooler.supabase.com:
 ### 2. DATA_GOV_API_KEY
 Your data.gov.in API key:
 ```
-579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b
+your secret here
 ```
 
 **Note:** You can remove `CRON_SECRET` and `VERCEL_DEPLOYMENT_URL` - no longer needed!
