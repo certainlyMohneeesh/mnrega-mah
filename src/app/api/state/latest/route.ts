@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCached, setCached, CacheKeys, CacheTTL } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -10,18 +9,6 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: NextRequest) {
   try {
-    // Try to get from cache
-    const cacheKey = CacheKeys.STATE_LATEST;
-    const cached = await getCached<any>(cacheKey);
-
-    if (cached) {
-      return NextResponse.json({
-        success: true,
-        data: cached,
-        cached: true,
-      });
-    }
-
     // Get all Maharashtra districts
     const districts = await prisma.district.findMany({
       where: { stateCode: "18" }, // Maharashtra
@@ -100,13 +87,9 @@ export async function GET(request: NextRequest) {
       lastUpdated: latestUpdate,
     };
 
-    // Cache the response
-    await setCached(cacheKey, response, CacheTTL.STATE_AGGREGATES);
-
     return NextResponse.json({
       success: true,
       data: response,
-      cached: false,
     });
   } catch (error) {
     console.error("❌ Error fetching state metrics:", error);

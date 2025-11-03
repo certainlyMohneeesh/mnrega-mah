@@ -65,8 +65,8 @@ const BATCH_SIZE = 500;           // Records per batch
 const CONCURRENT_STATES = 3;      // Process 3 states in parallel
 const RATE_LIMIT_DELAY = 1000;    // 1 second between batches
 
-// Request timeout (10 minutes)
-export const maxDuration = 600;
+// Request timeout (5 minutes - Vercel free tier limit)
+export const maxDuration = 300;
 
 // Helper functions for type conversion
 const toNumber = (val: any): number | null => {

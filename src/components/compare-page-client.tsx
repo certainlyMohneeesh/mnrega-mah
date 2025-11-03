@@ -4,17 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { LineChart } from "@/components/charts/line-chart";
 import { BarChart } from "@/components/charts/bar-chart";
 import { formatIndianNumber, formatNumber } from "@/lib/utils";
 import { useLanguage } from "@/contexts/language-context";
+import { DistrictSelectorWithFilter } from "@/components/district-selector-with-filter";
 
 interface District {
   id: string;
@@ -45,10 +39,9 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch all districts for dropdown with cache busting
-    // Add timestamp to force fresh data
+    // Fetch all districts for dropdown (fetch all at once for comparison)
     const timestamp = new Date().getTime();
-    fetch(`/api/districts?v=${timestamp}`, {
+    fetch(`/api/districts?limit=1000&v=${timestamp}`, {
       cache: 'no-store', // Don't use browser cache
       headers: {
         'Cache-Control': 'no-cache',
@@ -213,33 +206,16 @@ export function ComparePageClient({ initialDistricts, d1, d2 }: ComparePageClien
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Select
-                    onValueChange={(value) => value && addDistrict(value)}
-                    disabled={loading || allDistricts.length === 0}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={
-                        loading ? t('compare.loading') : 
-                        allDistricts.length === 0 ? t('compare.noDistrictsAvailable') :
-                        t('compare.selectDistrict')
-                      } />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {allDistricts.length === 0 ? (
-                        <div className="p-4 text-sm text-gray-500 text-center">
-                          {t('compare.noDistrictsWithData')}
-                        </div>
-                      ) : (
-                        allDistricts
-                          .filter(d => !districts.find(selected => selected.id === d.id))
-                          .map(d => (
-                            <SelectItem key={d.id} value={d.id}>
-                              {d.name} ({d.code})
-                            </SelectItem>
-                          ))
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <DistrictSelectorWithFilter
+                    districts={allDistricts}
+                    onSelect={(districtId) => addDistrict(districtId)}
+                    placeholder={
+                      loading ? t('compare.loading') : 
+                      allDistricts.length === 0 ? t('compare.noDistrictsAvailable') :
+                      t('compare.selectDistrict')
+                    }
+                    excludeIds={districts.map(d => d.id)}
+                  />
                 </CardContent>
               </Card>
             )}
