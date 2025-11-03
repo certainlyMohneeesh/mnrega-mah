@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { stateNameToSlug, ALL_INDIAN_STATES } from "@/lib/state-utils";
 import { cn } from "@/lib/utils";
@@ -70,10 +70,23 @@ const statePositions: Record<string, {
 export function InteractiveIndiaMapCSS({ className, onStateClick }: InteractiveIndiaMapCSSProps) {
   const [hoveredState, setHoveredState] = useState<string>("");
   const [tooltip, setTooltip] = useState<{ x: number; y: number; name: string } | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
 
   // Build state map for quick lookup
   const stateMap = new Map(ALL_INDIAN_STATES.map(state => [state.name, state]));
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleStateClick = useCallback((dbName: string) => {
     const stateInfo = stateMap.get(dbName);
@@ -111,9 +124,9 @@ export function InteractiveIndiaMapCSS({ className, onStateClick }: InteractiveI
 
   return (
     <div className={cn("relative w-full max-w-5xl mx-auto", className)}>
-      <div className="relative p-6 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 rounded-2xl border border-primary/20 shadow-xl">
+      <div className="relative p-3 sm:p-6 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 rounded-xl sm:rounded-2xl border border-primary/20 shadow-xl">
         {/* Tooltip */}
-        {tooltip && (
+        {tooltip && !isMobile && (
           <div
             className="fixed z-50 pointer-events-none"
             style={{
@@ -128,15 +141,27 @@ export function InteractiveIndiaMapCSS({ className, onStateClick }: InteractiveI
             </div>
           </div>
         )}
+        
+        {/* Mobile Tooltip (bottom fixed) */}
+        {tooltip && isMobile && (
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none animate-in slide-in-from-bottom-4 duration-200">
+            <div className="bg-primary text-primary-foreground px-4 py-3 rounded-lg shadow-2xl text-sm font-medium whitespace-nowrap border-2 border-primary-foreground/30 max-w-[90vw]">
+              <div className="font-bold">{tooltip.name}</div>
+              <div className="text-xs opacity-90 mt-1">Tap to explore districts</div>
+            </div>
+          </div>
+        )}
 
         {/* CSS Grid India Map */}
-        <div className="relative w-full">
+        <div className="relative w-full overflow-x-auto">
           <div 
-            className="grid gap-1 mx-auto"
+            className="grid mx-auto touch-manipulation"
             style={{
               gridTemplateColumns: "repeat(10, minmax(0, 1fr))",
-              gridTemplateRows: "repeat(13, 40px)",
-              maxWidth: "800px",
+              gridTemplateRows: isMobile ? "repeat(13, 32px)" : "repeat(13, 40px)",
+              maxWidth: isMobile ? "100%" : "800px",
+              minWidth: isMobile ? "600px" : "auto",
+              gap: isMobile ? "2px" : "4px",
             }}
           >
             {Object.entries(statePositions).map(([stateKey, state]) => {
@@ -148,11 +173,13 @@ export function InteractiveIndiaMapCSS({ className, onStateClick }: InteractiveI
                 <div
                   key={stateKey}
                   className={cn(
-                    "relative rounded-md border-2 transition-all duration-200 ease-out",
-                    "flex items-center justify-center text-[10px] font-medium text-center p-1",
-                    "hover:scale-105 hover:z-10 hover:shadow-lg",
+                    "relative rounded border-2 transition-all duration-200 ease-out",
+                    "flex items-center justify-center font-medium text-center p-0.5 sm:p-1",
+                    "active:scale-95 touch-manipulation select-none",
+                    !isMobile && "hover:scale-105 hover:z-10 hover:shadow-lg",
                     isDataAvailable ? "cursor-pointer" : "cursor-not-allowed opacity-60",
-                    isHovered && isDataAvailable && "ring-2 ring-primary ring-offset-2 scale-105 z-10 shadow-lg"
+                    isHovered && isDataAvailable && "ring-2 ring-primary scale-105 z-10 shadow-lg",
+                    isMobile && isHovered && isDataAvailable && "ring-offset-0"
                   )}
                   style={{
                     gridArea: state.gridArea,
@@ -161,13 +188,32 @@ export function InteractiveIndiaMapCSS({ className, onStateClick }: InteractiveI
                       : (isDataAvailable ? "#3b82f6" : "#94a3b8"),
                     borderColor: isHovered ? "#0f172a" : "#1e293b",
                     color: "white",
+                    fontSize: isMobile ? "7px" : "10px",
+                    lineHeight: isMobile ? "1.1" : "1.2",
                   }}
-                  onMouseEnter={(e) => handleMouseEnter(stateKey, e)}
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
+                  onMouseEnter={(e) => !isMobile && handleMouseEnter(stateKey, e)}
+                  onMouseMove={(e) => !isMobile && handleMouseMove(e)}
+                  onMouseLeave={() => !isMobile && handleMouseLeave()}
+                  onTouchStart={(e) => {
+                    if (isMobile) {
+                      handleMouseEnter(stateKey, e as any);
+                    }
+                  }}
+                  onTouchEnd={() => {
+                    if (isMobile) {
+                      setTimeout(handleMouseLeave, 2000);
+                    }
+                  }}
                   onClick={() => isDataAvailable && handleStateClick(state.dbName)}
                 >
-                  <span className="leading-tight">{state.displayName}</span>
+                  <span className="leading-tight break-words hyphens-auto" lang="en">
+                    {isMobile && state.displayName.length > 15 
+                      ? state.displayName.split(' ').map((word, i) => (
+                          <span key={i} className="block">{word}</span>
+                        ))
+                      : state.displayName
+                    }
+                  </span>
                 </div>
               );
             })}
@@ -175,25 +221,33 @@ export function InteractiveIndiaMapCSS({ className, onStateClick }: InteractiveI
         </div>
 
         {/* Legend */}
-        <div className="mt-8 text-center space-y-2">
-          <p className="text-sm font-medium text-foreground">
+        <div className="mt-4 sm:mt-8 text-center space-y-2">
+          <p className="text-sm sm:text-base font-medium text-foreground">
             🗺️ Navigate India's MGNREGA Data
           </p>
-          <p className="text-xs text-muted-foreground">
-            Click on any state to explore detailed district-level employment and expenditure data
+          <p className="text-xs sm:text-sm text-muted-foreground px-2">
+            {isMobile ? "Tap" : "Click"} on any state to explore detailed district-level employment and expenditure data
           </p>
-          <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground pt-2">
+          {isMobile && (
+            <p className="text-[10px] text-muted-foreground/80 italic px-2">
+              💡 Tip: Swipe horizontally to view the full map
+            </p>
+          )}
+          <div className={cn(
+            "flex items-center justify-center text-xs text-muted-foreground pt-2",
+            isMobile ? "flex-col gap-2" : "gap-4 sm:gap-6"
+          )}>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded border-2 border-gray-600" style={{ backgroundColor: "#3b82f6" }}></div>
-              <span>Data Available</span>
+              <span className="text-[10px] sm:text-xs">Data Available</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded border-2 border-gray-600" style={{ backgroundColor: "#2563eb" }}></div>
-              <span>Hover State</span>
+              <span className="text-[10px] sm:text-xs">{isMobile ? "Active" : "Hover"} State</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded border-2 border-gray-600 opacity-60" style={{ backgroundColor: "#94a3b8" }}></div>
-              <span>No Data</span>
+              <span className="text-[10px] sm:text-xs">No Data</span>
             </div>
           </div>
         </div>
