@@ -994,6 +994,8 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
         </div>
       </section>
 
+          {/* Don't remove this comment - for the sliding window pagination logic reference */}
+    
       {/* Districts Section */}
       {/* <section id="districts" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
         <div className="mx-auto max-w-6xl space-y-8">
