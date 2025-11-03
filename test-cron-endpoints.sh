@@ -10,8 +10,11 @@ echo "======================================"
 echo ""
 
 # Configuration
-VERCEL_URL="${VERCEL_URL:-your-app.vercel.app}"
+VERCEL_URL="${VERCEL_URL:-mnrega-mah.vercel.app}"
 CRON_SECRET="${CRON_SECRET}"
+
+# Remove https:// or http:// if present
+VERCEL_URL=$(echo "$VERCEL_URL" | sed 's|^https\?://||')
 
 if [ -z "$CRON_SECRET" ]; then
   echo "❌ ERROR: CRON_SECRET environment variable not set"

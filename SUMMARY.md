@@ -4,7 +4,7 @@
 
 Your GitHub Actions workflow was getting **404 errors** when calling:
 ```
-https://your-app.vercel.app/api/cron/daily-sync-optimized
+https://mnrega-mah.vercel.app/api/cron/daily-sync-optimized
 ```
 
 ## Root Cause
@@ -22,13 +22,13 @@ The route exists in your code but wasn't accessible in production because:
 
 **`/api/cron/debug`** - Test basic routing (no auth needed)
 ```bash
-curl https://your-app.vercel.app/api/cron/debug
+curl https://mnrega-mah.vercel.app/api/cron/debug
 ```
 
 **`/api/cron/daily-sync-optimized/health`** - Test auth & config
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" \
-  https://your-app.vercel.app/api/cron/daily-sync-optimized/health
+  https://mnrega-mah.vercel.app/api/cron/daily-sync-optimized/health
 ```
 
 ### 2. ✅ Enhanced Logging
