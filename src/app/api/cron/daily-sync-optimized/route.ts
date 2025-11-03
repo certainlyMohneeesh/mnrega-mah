@@ -235,16 +235,35 @@ async function processState(
  */
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
+  const timestamp = new Date().toISOString();
+
+  // Log request details
+  console.log("=" .repeat(80));
+  console.log(`🔄 Daily Sync Request - ${timestamp}`);
+  console.log(`📍 URL: ${request.url}`);
+  console.log(`🌐 Region: ${process.env.VERCEL_REGION || "local"}`);
+  console.log("=" .repeat(80));
 
   // Authentication
   const authHeader = request.headers.get("authorization");
   const urlSecret = request.nextUrl.searchParams.get("secret");
 
+  console.log(`🔐 Auth Check:`);
+  console.log(`  - Header: ${authHeader ? "✅ Present" : "❌ Missing"}`);
+  console.log(`  - URL Secret: ${urlSecret ? "✅ Present" : "❌ Missing"}`);
+  console.log(`  - Env Secret: ${CRON_SECRET ? "✅ Configured" : "❌ Not Set"}`);
+
   if (authHeader !== `Bearer ${CRON_SECRET}` && urlSecret !== CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.log("❌ Authorization failed");
+    return NextResponse.json({ 
+      error: "Unauthorized",
+      hint: "Provide valid Authorization header or ?secret= parameter",
+      timestamp,
+    }, { status: 401 });
   }
 
-  console.log("🔄 Starting optimized daily sync...");
+  console.log("✅ Authorization successful");
+  console.log("\n🔄 Starting optimized daily sync...");
 
   // Get financial years to sync (previous + current)
   const syncConfig = getSyncConfiguration();
@@ -252,6 +271,7 @@ export async function GET(request: NextRequest) {
 
   console.log(`📊 ${syncConfig.message}`);
   console.log(`📦 States: ${INDIAN_STATES.length}, Batch size: ${BATCH_SIZE}`);
+  console.log(`💾 Database: ${process.env.DATABASE_URL ? "✅ Connected" : "❌ Not configured"}`);
 
   try {
     // Prepare states with codes
