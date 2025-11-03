@@ -65,7 +65,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
-              "connect-src 'self' https://api.data.gov.in",
+              "connect-src 'self' https://api.data.gov.in https://raw.githubusercontent.com",
               "frame-ancestors 'self'",
             ].join("; "),
           },

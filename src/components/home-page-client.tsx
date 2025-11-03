@@ -8,7 +8,7 @@ import { StatCard } from "@/components/stat-card";
 import { DistrictCard } from "@/components/district-card";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { LocationDetector } from "@/components/location-detector";
-import { InteractiveIndiaMap } from "@/components/interactive-india-map";
+import { InteractiveIndiaMapCSS } from "@/components/interactive-india-map-css";
 import {
   Select,
   SelectContent,
@@ -284,73 +284,37 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
             </div>
 
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-brand hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-brand/10 rounded-lg">
-                    <IndianRupee className="h-6 w-6 text-brand" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                    {t('home.stats.expenditure')}
-                  </h3>
-                </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">
-                  {formatIndianNumber(stateStats.aggregates.totalExpenditure)}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {t('home.stats.acrossDistricts').replace('{count}', stateStats.aggregates.totalDistricts)}
-                </p>
-              </div>
+              <StatCard
+                title={t('home.stats.expenditure')}
+                value={formatIndianNumber(stateStats.aggregates.totalExpenditure)}
+                subtitle={t('home.stats.acrossDistricts').replace('{count}', stateStats.aggregates.totalDistricts)}
+                icon={IndianRupee}
+                className="border-l-4 border-brand"
+              />
               
-              <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-accent-purple hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-accent-purple/10 rounded-lg">
-                    <Users className="h-6 w-6 text-accent-purple" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                    {t('home.stats.households')}
-                  </h3>
-                </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">
-                  {formatNumber(stateStats.aggregates.householdsWorked)}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {t('home.totalFamilies')}
-                </p>
-              </div>
+              <StatCard
+                title={t('home.stats.households')}
+                value={formatNumber(stateStats.aggregates.householdsWorked)}
+                subtitle={t('home.totalFamilies')}
+                icon={Users}
+                className="border-l-4 border-accent-purple"
+              />
               
-              <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-visuals-6 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-orange-50 rounded-lg">
-                    <Briefcase className="h-6 w-6 text-visuals-6" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                    {t('home.stats.works')}
-                  </h3>
-                </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">
-                  {formatNumber(stateStats.aggregates.worksCompleted)}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {formatNumber(stateStats.aggregates.worksOngoing)} {t('home.inProgress')}
-                </p>
-              </div>
+              <StatCard
+                title={t('home.stats.works')}
+                value={formatNumber(stateStats.aggregates.worksCompleted)}
+                subtitle={`${formatNumber(stateStats.aggregates.worksOngoing)} ${t('home.inProgress')}`}
+                icon={Briefcase}
+                className="border-l-4 border-visuals-6"
+              />
               
-              <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-visuals-8 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 bg-purple-50 rounded-lg">
-                    <TrendingUp className="h-6 w-6 text-visuals-8" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                    {t('home.stats.personDays')}
-                  </h3>
-                </div>
-                <p className="text-3xl font-bold text-gray-900 mb-1">
-                  {formatNumber(stateStats.aggregates.personDaysGenerated)}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {formatNumber(stateStats.aggregates.womenPersonDays)} {t('home.byWomen')}
-                </p>
-              </div>
+              <StatCard
+                title={t('home.stats.personDays')}
+                value={formatNumber(stateStats.aggregates.personDaysGenerated)}
+                subtitle={`${formatNumber(stateStats.aggregates.womenPersonDays)} ${t('home.byWomen')}`}
+                icon={TrendingUp}
+                className="border-l-4 border-visuals-8"
+              />
             </div>
           </div>
         </section>
@@ -543,7 +507,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <InteractiveIndiaMap className="mb-8" />
+            <InteractiveIndiaMapCSS className="mb-8" />
           </motion.div>
 
           {/* Quick Stats about all states */}
