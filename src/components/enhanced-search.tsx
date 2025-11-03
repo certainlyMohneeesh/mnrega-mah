@@ -1,0 +1,350 @@
+"use client";
+
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Search, X, Mic, MicOff, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Fuse from "fuse.js";
+import { useRouter } from "next/navigation";
+
+interface SearchResult {
+  id: string;
+  name: string;
+  stateName: string;
+  stateCode: string;
+  type: "district" | "state";
+  code: string;
+}
+
+interface EnhancedSearchProps {
+  placeholder?: string;
+  onSearch?: (query: string) => void;
+  className?: string;
+  showVoiceInput?: boolean;
+  autoFocus?: boolean;
+}
+
+export function EnhancedSearch({
+  placeholder = "Search districts or states...",
+  onSearch,
+  className,
+  showVoiceInput = true,
+  autoFocus = false,
+}: EnhancedSearchProps) {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  
+  const inputRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const fuseRef = useRef<Fuse<SearchResult> | null>(null);
+  const router = useRouter();
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setVoiceSupported(true);
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-IN"; // Indian English
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setQuery(transcript);
+          setIsListening(false);
+        };
+
+        recognition.onerror = () => {
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
+  // Fetch search data and initialize Fuse.js
+  useEffect(() => {
+    const fetchSearchData = async () => {
+      try {
+        const response = await fetch("/api/districts?includeStats=false&limit=1000");
+        const data = await response.json();
+        
+        if (data.success) {
+          const searchData: SearchResult[] = data.data.map((district: any) => ({
+            id: district.id,
+            name: district.name,
+            stateName: district.stateName,
+            stateCode: district.stateCode,
+            type: "district" as const,
+            code: district.code,
+          }));
+
+          // Initialize Fuse.js with fuzzy search options
+          fuseRef.current = new Fuse(searchData, {
+            keys: [
+              { name: "name", weight: 2 },
+              { name: "stateName", weight: 1 },
+            ],
+            threshold: 0.3, // More lenient matching for typos
+            includeScore: true,
+            minMatchCharLength: 2,
+            shouldSort: true,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch search data:", error);
+      }
+    };
+
+    fetchSearchData();
+  }, []);
+
+  // Perform fuzzy search
+  useEffect(() => {
+    if (!query.trim() || !fuseRef.current) {
+      setResults([]);
+      setIsOpen(false);
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      const searchResults = fuseRef.current!.search(query, { limit: 8 });
+      setResults(searchResults.map(result => result.item));
+      setIsOpen(searchResults.length > 0);
+      setSelectedIndex(-1);
+      setIsLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [query]);
+
+  // Handle voice input
+  const toggleVoiceInput = useCallback(() => {
+    if (!recognitionRef.current) return;
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  }, [isListening]);
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!isOpen) return;
+
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (selectedIndex >= 0 && results[selectedIndex]) {
+          handleSelectResult(results[selectedIndex]);
+        } else if (onSearch) {
+          onSearch(query);
+          setIsOpen(false);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        setIsOpen(false);
+        setSelectedIndex(-1);
+        break;
+    }
+  }, [isOpen, results, selectedIndex, query, onSearch]);
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && resultsRef.current) {
+      const selectedElement = resultsRef.current.children[selectedIndex] as HTMLElement;
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+  }, [selectedIndex]);
+
+  // Handle result selection
+  const handleSelectResult = useCallback((result: SearchResult) => {
+    if (result.type === "district") {
+      router.push(`/district/${result.stateCode.toLowerCase()}/${result.code.toLowerCase()}`);
+    }
+    setQuery("");
+    setIsOpen(false);
+    setSelectedIndex(-1);
+  }, [router]);
+
+  // Clear search
+  const handleClear = useCallback(() => {
+    setQuery("");
+    setResults([]);
+    setIsOpen(false);
+    setSelectedIndex(-1);
+    inputRef.current?.focus();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (resultsRef.current && !resultsRef.current.contains(event.target as Node) &&
+          inputRef.current && !inputRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className={cn("relative w-full", className)}>
+      {/* Search Input */}
+      <div className="relative">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+          <Search className="h-5 w-5" aria-hidden="true" />
+        </div>
+        
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onFocus={() => query && results.length > 0 && setIsOpen(true)}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          className={cn(
+            "w-full h-12 pl-12 pr-24 rounded-lg border-2 border-input bg-background",
+            "text-base font-medium placeholder:text-muted-foreground",
+            "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
+            "transition-all duration-200",
+            "touch-manipulation", // Better touch target
+            isListening && "ring-2 ring-red-500 border-red-500"
+          )}
+          aria-label="Search districts and states"
+          aria-expanded={isOpen}
+          aria-controls="search-results"
+          aria-activedescendant={selectedIndex >= 0 ? `result-${selectedIndex}` : undefined}
+          role="combobox"
+          aria-autocomplete="list"
+        />
+
+        {/* Right side buttons */}
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="p-2">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-label="Loading" />
+            </div>
+          )}
+
+          {/* Clear button */}
+          {query && !isLoading && (
+            <button
+              onClick={handleClear}
+              className="p-2 hover:bg-muted rounded-md transition-colors touch-manipulation"
+              aria-label="Clear search"
+              type="button"
+            >
+              <X className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+            </button>
+          )}
+
+          {/* Voice input button */}
+          {showVoiceInput && voiceSupported && (
+            <button
+              onClick={toggleVoiceInput}
+              className={cn(
+                "p-2 rounded-md transition-colors touch-manipulation",
+                isListening 
+                  ? "bg-red-500 text-white hover:bg-red-600" 
+                  : "hover:bg-muted text-muted-foreground"
+              )}
+              aria-label={isListening ? "Stop voice input" : "Start voice input"}
+              type="button"
+            >
+              {isListening ? (
+                <MicOff className="h-5 w-5" aria-hidden="true" />
+              ) : (
+                <Mic className="h-5 w-5" aria-hidden="true" />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Search Results Dropdown */}
+      {isOpen && results.length > 0 && (
+        <div
+          ref={resultsRef}
+          id="search-results"
+          role="listbox"
+          className="absolute z-50 w-full mt-2 bg-background border-2 border-input rounded-lg shadow-lg max-h-96 overflow-y-auto"
+        >
+          {results.map((result, index) => (
+            <button
+              key={result.id}
+              id={`result-${index}`}
+              role="option"
+              aria-selected={selectedIndex === index}
+              onClick={() => handleSelectResult(result)}
+              onMouseEnter={() => setSelectedIndex(index)}
+              className={cn(
+                "w-full px-4 py-3 text-left transition-colors touch-manipulation",
+                "border-b border-border last:border-b-0",
+                "focus:outline-none focus:bg-muted",
+                selectedIndex === index 
+                  ? "bg-muted" 
+                  : "hover:bg-muted"
+              )}
+            >
+              <div className="font-medium text-foreground">{result.name}</div>
+              <div className="text-sm text-muted-foreground mt-0.5">
+                {result.stateName}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* No results message */}
+      {isOpen && query && !isLoading && results.length === 0 && (
+        <div className="absolute z-50 w-full mt-2 bg-background border-2 border-input rounded-lg shadow-lg p-4 text-center text-muted-foreground">
+          No results found for "{query}"
+        </div>
+      )}
+
+      {/* Voice input hint */}
+      {isListening && (
+        <div className="absolute z-50 w-full mt-2 bg-red-50 dark:bg-red-950 border-2 border-red-200 dark:border-red-800 rounded-lg shadow-lg p-4 text-center">
+          <div className="flex items-center justify-center gap-2 text-red-600 dark:text-red-400">
+            <Mic className="h-5 w-5 animate-pulse" />
+            <span className="font-medium">Listening... Speak now</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
