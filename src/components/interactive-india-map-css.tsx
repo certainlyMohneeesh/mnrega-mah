@@ -223,7 +223,7 @@ export function InteractiveIndiaMapCSS({ className, onStateClick }: InteractiveI
         {/* Legend */}
         <div className="mt-4 sm:mt-8 text-center space-y-2">
           <p className="text-sm sm:text-base font-medium text-foreground">
-            🗺️ Navigate India's MGNREGA Data
+            Navigate India's MGNREGA Data
           </p>
           <p className="text-xs sm:text-sm text-muted-foreground px-2">
             {isMobile ? "Tap" : "Click"} on any state to explore detailed district-level employment and expenditure data
