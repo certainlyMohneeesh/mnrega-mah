@@ -1,6 +1,5 @@
 import axios, { AxiosError } from "axios";
 import prisma from "../src/lib/prisma";
-import { invalidateDistrictCaches } from "../src/lib/redis";
 
 /**
  * Data.gov.in MGNREGA API Configuration
@@ -258,12 +257,6 @@ async function fetchMGNREGAData(
         status = offset === 0 ? "error" : "partial";
         hasMore = false;
       }
-    }
-
-    // Invalidate caches after successful ingestion
-    if (totalRecords > 0) {
-      console.log("🗑️  Invalidating caches...");
-      await invalidateDistrictCaches();
     }
 
     console.log(`✅ Data ingestion completed. Total records processed: ${totalRecords}`);
