@@ -1,12 +1,26 @@
 import { Suspense } from "react";
 import { HomePageClient } from "@/components/home-page-client";
 import { HomePageSkeleton } from "@/components/home-page-skeleton";
-import { getBaseUrl } from "@/lib/api-utils";
+
+/**
+ * Get the base URL for server-side API calls
+ */
+function getServerSideBaseUrl(): string {
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  
+  return "http://localhost:3000";
+}
 
 async function getInitialData() {
   try {
-    // Get base URL using centralized utility
-    const baseUrl = getBaseUrl();
+    // Get base URL for this server request
+    const baseUrl = getServerSideBaseUrl();
     
     console.log('🔍 Fetching districts from:', baseUrl);
     

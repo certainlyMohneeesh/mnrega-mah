@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StatePageClient } from "@/components/state-page-client";
 import { getAllStateParams, getStateBySlug } from "@/lib/state-utils";
-import { getBaseUrl } from "@/lib/api-utils";
+import { headers } from "next/headers";
 
 // Generate static params for all states
 export async function generateStaticParams() {
@@ -12,8 +12,8 @@ export async function generateStaticParams() {
 // ISR: Revalidate every 12 hours (43200 seconds)
 export const revalidate = 43200;
 
-// Enable dynamic rendering for search functionality
-export const dynamic = "force-static";
+// Use static generation with ISR for optimal performance
+export const dynamic = "auto";
 
 export async function generateMetadata({
   params,
@@ -40,23 +40,50 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * Get the base URL for server-side API calls
+ * This handles both development and production (Vercel) environments
+ */
+function getServerSideBaseUrl(): string {
+  // Production: Use VERCEL_URL or NEXT_PUBLIC_APP_URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL;
+  }
+  
+  // Development fallback
+  return "http://localhost:3000";
+}
+
 async function getStateData(stateCode: string, page: number = 1, limit: number = 15) {
   try {
-    // Get base URL using centralized utility
-    const baseUrl = getBaseUrl();
+    // Get the base URL for this request
+    const baseUrl = getServerSideBaseUrl();
+    
+    const stateApiUrl = `${baseUrl}/api/state/${stateCode}`;
+    const districtsApiUrl = `${baseUrl}/api/state/${stateCode}/districts?page=${page}&limit=${limit}`;
 
-    console.log(`🌐 Fetching state data from: ${baseUrl}/api/state/${stateCode}`);
+    console.log(`🌐 Fetching state data from: ${stateApiUrl}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV}, Vercel URL: ${process.env.VERCEL_URL || 'not set'}`);
 
     // Fetch state metrics
     const stateResponse = await fetch(
-      `${baseUrl}/api/state/${stateCode}`,
+      stateApiUrl,
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
     );
 
     if (!stateResponse.ok) {
       console.error(`❌ State API failed with status: ${stateResponse.status}`);
+      const errorText = await stateResponse.text();
+      console.error(`❌ Error details: ${errorText}`);
       return null;
     }
 
@@ -64,14 +91,19 @@ async function getStateData(stateCode: string, page: number = 1, limit: number =
 
     // Fetch paginated districts
     const districtsResponse = await fetch(
-      `${baseUrl}/api/state/${stateCode}/districts?page=${page}&limit=${limit}`,
+      districtsApiUrl,
       {
         next: { revalidate: 1800 }, // Cache for 30 minutes
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
     );
 
     if (!districtsResponse.ok) {
       console.error(`❌ Districts API failed with status: ${districtsResponse.status}`);
+      const errorText = await districtsResponse.text();
+      console.error(`❌ Error details: ${errorText}`);
       return null;
     }
 
