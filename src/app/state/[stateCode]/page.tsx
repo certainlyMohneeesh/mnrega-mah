@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StatePageClient } from "@/components/state-page-client";
 import { getAllStateParams, getStateBySlug } from "@/lib/state-utils";
-import { headers } from "next/headers";
+import prisma from "@/lib/prisma";
 
 // IMPORTANT: Don't use generateStaticParams with VERCEL_URL
 // It causes build-time generation where VERCEL_URL is not available
@@ -40,83 +40,118 @@ export async function generateMetadata({
 }
 
 /**
- * Get the base URL for server-side API calls
- * This handles both development and production (Vercel) environments
+ * DIRECT DATABASE QUERY - NO API CALLS
+ * This bypasses the need for HTTP requests and VERCEL_URL entirely
+ * Works perfectly in all environments (localhost, preview, production)
  */
-function getServerSideBaseUrl(): string {
-  // Production: Use VERCEL_URL or NEXT_PUBLIC_APP_URL
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
-  
-  // Development fallback
-  return "http://localhost:3000";
-}
-
 async function getStateData(stateCode: string, page: number = 1, limit: number = 15) {
   try {
-    // Get the base URL for this request
-    const baseUrl = getServerSideBaseUrl();
+    console.log(`🔍 Loading state data for: ${stateCode}`);
     
-    const stateApiUrl = `${baseUrl}/api/state/${stateCode}`;
-    const districtsApiUrl = `${baseUrl}/api/state/${stateCode}/districts?page=${page}&limit=${limit}`;
-
-    console.log(`🌐 Fetching state data from: ${stateApiUrl}`);
-    console.log(`📍 Environment: ${process.env.NODE_ENV}, Vercel URL: ${process.env.VERCEL_URL || 'not set'}`);
-
-    // Fetch state metrics
-    const stateResponse = await fetch(
-      stateApiUrl,
-      {
-        next: { revalidate: 3600 }, // Cache for 1 hour
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (!stateResponse.ok) {
-      console.error(`❌ State API failed with status: ${stateResponse.status}`);
-      const errorText = await stateResponse.text();
-      console.error(`❌ Error details: ${errorText}`);
+    // Get state info from slug
+    const stateInfo = getStateBySlug(stateCode);
+    if (!stateInfo) {
+      console.error(`❌ Invalid state code: ${stateCode}`);
       return null;
     }
 
-    const stateData = await stateResponse.json();
+    console.log(`✅ State found: ${stateInfo.displayName}`);
 
-    // Fetch paginated districts
-    const districtsResponse = await fetch(
-      districtsApiUrl,
-      {
-        next: { revalidate: 1800 }, // Cache for 30 minutes
-        headers: {
-          'Content-Type': 'application/json',
+    // Get all districts for this state from database
+    const districts = await prisma.district.findMany({
+      where: {
+        stateName: stateInfo.name,
+      },
+      include: {
+        _count: {
+          select: { metrics: true },
         },
-      }
+      },
+      orderBy: { name: "asc" },
+    });
+
+    console.log(`✅ Found ${districts.length} districts`);
+
+    // Get latest metrics for all districts
+    const latestMetrics = await Promise.all(
+      districts.map(async (district) => {
+        const metric = await prisma.monthlyMetric.findFirst({
+          where: { districtId: district.id },
+          orderBy: [{ finYear: "desc" }, { createdAt: "desc" }],
+        });
+        return metric;
+      })
     );
 
-    if (!districtsResponse.ok) {
-      console.error(`❌ Districts API failed with status: ${districtsResponse.status}`);
-      const errorText = await districtsResponse.text();
-      console.error(`❌ Error details: ${errorText}`);
-      return null;
-    }
+    // Calculate aggregated state-level metrics
+    const validMetrics = latestMetrics.filter((m) => m !== null);
+    
+    const stateMetrics = {
+      totalExpenditure: validMetrics.reduce((sum, m) => sum + (m?.totalExpenditure || 0), 0),
+      householdsWorked: validMetrics.reduce((sum, m) => sum + (m?.totalHouseholdsWorked || 0), 0),
+      completedWorks: validMetrics.reduce((sum, m) => sum + (m?.numberOfCompletedWorks || 0), 0),
+      ongoingWorks: validMetrics.reduce((sum, m) => sum + (m?.numberOfOngoingWorks || 0), 0),
+      scPersonDays: validMetrics.reduce((sum, m) => sum + (m?.scPersonDays || 0), 0),
+      stPersonDays: validMetrics.reduce((sum, m) => sum + (m?.stPersonDays || 0), 0),
+      womenPersonDays: validMetrics.reduce((sum, m) => sum + (m?.womenPersonDays || 0), 0),
+      totalDistricts: districts.length,
+      districtsWithData: validMetrics.length,
+    };
 
-    const districtsData = await districtsResponse.json();
+    // Get most recent update date
+    const latestUpdate = validMetrics.reduce((latest, m) => {
+      if (!m) return latest;
+      const metricDate = m.createdAt;
+      return !latest || metricDate > latest ? metricDate : latest;
+    }, null as Date | null);
+
+    // Paginate districts
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedDistricts = districts.slice(startIndex, endIndex);
+
+    // Get metrics for paginated districts
+    const districtsWithMetrics = await Promise.all(
+      paginatedDistricts.map(async (district) => {
+        const latestMetric = await prisma.monthlyMetric.findFirst({
+          where: { districtId: district.id },
+          orderBy: [{ finYear: "desc" }, { createdAt: "desc" }],
+        });
+
+        return {
+          id: district.id,
+          code: district.code,
+          name: district.name,
+          stateName: district.stateName,
+          stateCode: stateCode, // Add stateCode
+          metrics: latestMetric ? {
+            totalExpenditure: latestMetric.totalExpenditure,
+            totalHouseholdsWorked: latestMetric.totalHouseholdsWorked,
+            numberOfCompletedWorks: latestMetric.numberOfCompletedWorks,
+            numberOfOngoingWorks: latestMetric.numberOfOngoingWorks,
+            finYear: latestMetric.finYear,
+          } : null,
+        };
+      })
+    );
+
+    console.log(`✅ State data loaded successfully`);
 
     return {
-      state: stateData.data.state,
-      metrics: stateData.data.metrics,
-      lastUpdated: stateData.data.lastUpdated,
-      districts: districtsData.data.districts,
-      pagination: districtsData.pagination,
+      state: stateInfo,
+      metrics: stateMetrics,
+      lastUpdated: latestUpdate ? latestUpdate.toISOString() : null,
+      districts: districtsWithMetrics,
+      pagination: {
+        page: page,
+        limit: limit,
+        total: districts.length,
+        totalPages: Math.ceil(districts.length / limit),
+        hasMore: endIndex < districts.length,
+      },
     };
   } catch (error) {
-    console.error("❌ Error fetching state data:", error);
+    console.error("❌ Error loading state data:", error);
     return null;
   }
 }
