@@ -4,16 +4,15 @@ import { StatePageClient } from "@/components/state-page-client";
 import { getAllStateParams, getStateBySlug } from "@/lib/state-utils";
 import { headers } from "next/headers";
 
-// Generate static params for all states
-export async function generateStaticParams() {
-  return getAllStateParams();
-}
+// IMPORTANT: Don't use generateStaticParams with VERCEL_URL
+// It causes build-time generation where VERCEL_URL is not available
+// Instead, we use dynamic rendering with caching
 
-// ISR: Revalidate every 12 hours (43200 seconds)
+// Force dynamic rendering to ensure VERCEL_URL is available
+export const dynamic = "force-dynamic";
+
+// Cache the page for 12 hours (ISR-like behavior)
 export const revalidate = 43200;
-
-// Use static generation with ISR for optimal performance
-export const dynamic = "auto";
 
 export async function generateMetadata({
   params,
