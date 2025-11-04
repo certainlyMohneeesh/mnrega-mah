@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "MGNREGA Statistics",
     "Rural Employment India"
   ],
-  authors: [{ name: "MGNREGA India Team" }],
+  authors: [{ name: "Mohneesh Naidu" }],
   creator: "MGNREGA India Dashboard",
   publisher: "MGNREGA India",
   formatDetection: {
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     url: "/",
-    title: "All India MGNREGA Dashboard - Real-time Employment Data",
+    title: "MGNREGA India - Real-time Employment Data",
     description: "Track MGNREGA employment and expenditure across 36 states and 700+ districts. Transparent data for empowered citizens.",
     siteName: "MGNREGA India Dashboard",
     images: [
