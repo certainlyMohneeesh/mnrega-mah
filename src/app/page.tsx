@@ -1,15 +1,12 @@
 import { Suspense } from "react";
 import { HomePageClient } from "@/components/home-page-client";
 import { HomePageSkeleton } from "@/components/home-page-skeleton";
+import { getBaseUrl } from "@/lib/api-utils";
 
 async function getInitialData() {
   try {
-    // In production on Vercel, use absolute URL with the deployment domain
-    // In development, use localhost
-    const isProduction = process.env.VERCEL_ENV === 'production';
-    const baseUrl = isProduction 
-      ? 'https://mnrega-mah.vercel.app' 
-      : 'http://localhost:3000';
+    // Get base URL using centralized utility
+    const baseUrl = getBaseUrl();
     
     console.log('🔍 Fetching districts from:', baseUrl);
     

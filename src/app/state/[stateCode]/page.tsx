@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { StatePageClient } from "@/components/state-page-client";
 import { getAllStateParams, getStateBySlug } from "@/lib/state-utils";
+import { getBaseUrl } from "@/lib/api-utils";
 
 // Generate static params for all states
 export async function generateStaticParams() {
@@ -41,15 +42,21 @@ export async function generateMetadata({
 
 async function getStateData(stateCode: string, page: number = 1, limit: number = 15) {
   try {
+    // Get base URL using centralized utility
+    const baseUrl = getBaseUrl();
+
+    console.log(`🌐 Fetching state data from: ${baseUrl}/api/state/${stateCode}`);
+
     // Fetch state metrics
     const stateResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/state/${stateCode}`,
+      `${baseUrl}/api/state/${stateCode}`,
       {
         next: { revalidate: 3600 }, // Cache for 1 hour
       }
     );
 
     if (!stateResponse.ok) {
+      console.error(`❌ State API failed with status: ${stateResponse.status}`);
       return null;
     }
 
@@ -57,13 +64,14 @@ async function getStateData(stateCode: string, page: number = 1, limit: number =
 
     // Fetch paginated districts
     const districtsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/state/${stateCode}/districts?page=${page}&limit=${limit}`,
+      `${baseUrl}/api/state/${stateCode}/districts?page=${page}&limit=${limit}`,
       {
         next: { revalidate: 1800 }, // Cache for 30 minutes
       }
     );
 
     if (!districtsResponse.ok) {
+      console.error(`❌ Districts API failed with status: ${districtsResponse.status}`);
       return null;
     }
 
@@ -77,7 +85,7 @@ async function getStateData(stateCode: string, page: number = 1, limit: number =
       pagination: districtsData.pagination,
     };
   } catch (error) {
-    console.error("Error fetching state data:", error);
+    console.error("❌ Error fetching state data:", error);
     return null;
   }
 }
