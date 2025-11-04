@@ -124,13 +124,17 @@ async function getStateData(stateCode: string, page: number = 1, limit: number =
           name: district.name,
           stateName: district.stateName,
           stateCode: stateCode, // Add stateCode
-          metrics: latestMetric ? {
-            totalExpenditure: latestMetric.totalExpenditure,
-            totalHouseholdsWorked: latestMetric.totalHouseholdsWorked,
-            numberOfCompletedWorks: latestMetric.numberOfCompletedWorks,
-            numberOfOngoingWorks: latestMetric.numberOfOngoingWorks,
+          latestMetric: latestMetric ? {
+            totalExpenditure: latestMetric.totalExpenditure ?? 0,
+            totalHouseholdsWorked: latestMetric.totalHouseholdsWorked ?? 0,
+            numberOfCompletedWorks: latestMetric.numberOfCompletedWorks ?? 0,
+            numberOfOngoingWorks: latestMetric.numberOfOngoingWorks ?? 0,
             finYear: latestMetric.finYear,
+            month: latestMetric.month,
           } : null,
+          _count: {
+            metrics: district._count.metrics,
+          },
         };
       })
     );
