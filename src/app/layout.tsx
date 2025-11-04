@@ -12,7 +12,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://mgnrega.cyth.app'),
   title: {
-    default: "All India MGNREGA Dashboard - Track Employment & Expenditure Data",
+    default: "MGNREGA India",
     template: "%s | MGNREGA India"
   },
   description: "Comprehensive MGNREGA dashboard tracking employment, expenditure, and rural development across all 36 states and 700+ districts of India. Real-time data, analytics, and insights.",
