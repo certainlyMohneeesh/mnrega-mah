@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma'
 import { getAllStateParams } from '@/lib/state-utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://mnrega-mah.vercel.app'
+  const baseUrl = 'https://mgnrega.cyth.app'
   
   // Get all states
   const states = getAllStateParams()

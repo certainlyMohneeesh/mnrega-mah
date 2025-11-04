@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/'],
       },
     ],
-    sitemap: 'https://mnrega-mah.vercel.app/sitemap.xml',
+    sitemap: 'https://mgnrega.cyth.app/sitemap.xml',
   }
 }

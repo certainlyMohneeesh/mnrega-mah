@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://mnrega-mah.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://mgnrega.cyth.app'),
   title: {
     default: "All India MGNREGA Dashboard - Track Employment & Expenditure Data",
     template: "%s | MGNREGA India"

@@ -41,7 +41,7 @@ export function Header() {
             </div>
           <div className="hidden sm:block">
             <div className="text-sm font-bold text-gray-900">MGNREGA</div>
-            <div className="text-xs text-gray-500">Maharashtra</div>
+            <div className="text-xs text-gray-500">India</div>
           </div>
         </Link>
 
