@@ -1,12 +1,12 @@
 {
-  "name": "Our Voice, Our Rights - MGNREGA Maharashtra",
-  "short_name": "MGNREGA MH",
-  "description": "Track MGNREGA performance across Maharashtra districts",
+  "name": "MGNREGA India Dashboard - Employment & Expenditure Tracking",
+  "short_name": "MGNREGA India",
+  "description": "Track MGNREGA employment and expenditure across all 36 states and 700+ districts of India. Real-time data, analytics, and insights.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#16a34a",
-  "orientation": "portrait",
+  "theme_color": "#252653",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -17,15 +17,34 @@
     {
       "src": "/icon-384x384.png",
       "sizes": "384x384",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["government", "utilities"],
-  "lang": "mr-IN",
-  "dir": "ltr"
+  "categories": ["government", "finance", "productivity", "education"],
+  "lang": "en-IN",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
 }

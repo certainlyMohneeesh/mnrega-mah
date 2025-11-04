@@ -1137,10 +1137,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
         </div>
       </section> */}
 
-      {/* Footer - Simplified Tattle Style */}
+      {/* Footer - Enhanced for SEO & All India Coverage */}
       <footer className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8 border-t">
-        <div className="mx-auto max-w-5xl">
-          <div className="grid md:grid-cols-3 gap-12 mb-12">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {/* Logo & Description */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -1157,12 +1157,12 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-base font-bold text-gray-900">MGNREGA Maharashtra</div>
-                  <div className="text-sm text-gray-500">Data Dashboard</div>
+                  <div className="text-base font-bold text-gray-900">MGNREGA India</div>
+                  <div className="text-sm text-gray-500">All States Dashboard</div>
                 </div>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
-                {t('footer.description')}
+                Track MGNREGA employment and expenditure across all 36 states and 700+ districts of India. Transparent data for empowered citizens.
               </p>
             </div>
 
@@ -1193,20 +1193,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
               </ul>
             </div>
 
-            {/* Resources */}
+            {/* Official Resources */}
             <div>
-              <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">{t('home.resources')}</h4>
+              <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Official Links</h4>
               <ul className="space-y-3 text-sm">
-                <li>
-                  <Link href="/faq" className="text-gray-600 hover:text-gray-900 transition-colors">
-                    {t('footer.faq')}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition-colors">
-                    {t('footer.contact')}
-                  </Link>
-                </li>
                 <li>
                   <a 
                     href="https://nrega.nic.in/" 
@@ -1214,17 +1204,63 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                     rel="noopener noreferrer"
                     className="text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    {t('home.officialSite')}
+                    MGNREGA Official
                   </a>
+                </li>
+                <li>
+                  <a 
+                    href="https://rural.nic.in/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Ministry of Rural Development
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="https://data.gov.in/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Data.gov.in
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Coverage Info */}
+            <div>
+              <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Coverage</h4>
+              <ul className="space-y-3 text-sm text-gray-600">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span>36 States & UTs</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span>700+ Districts</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span>Real-time Updates</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span>9 Indian Languages</span>
                 </li>
               </ul>
             </div>
           </div>
 
-          {/* Bottom Bar */}
-          <div className="pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-500 text-center leading-relaxed">
-              {t('footer.license')}
+          {/* Bottom Bar with SEO-friendly content */}
+          <div className="mt-12 pt-8 border-t border-gray-200 space-y-4">
+            <p className="text-xs text-gray-600 text-center leading-relaxed max-w-4xl mx-auto">
+              <strong>About MGNREGA:</strong> The Mahatma Gandhi National Rural Employment Guarantee Act (MGNREGA) provides a legal guarantee for 100 days of wage employment in a financial year to rural households whose adult members volunteer to do unskilled manual work. This dashboard provides transparent access to employment data, expenditure tracking, and work progress across all Indian states.
+            </p>
+            <p className="text-sm text-gray-500 text-center">
+              © {new Date().getFullYear()} MGNREGA India Dashboard. Data sourced from official government portals. {t('footer.license')}
             </p>
           </div>
         </div>
