@@ -36,16 +36,13 @@ export function MapPageClient({ statesData, indiaGeoJson }: MapPageClientProps) 
   const router = useRouter();
 
   const handleFeatureClick = (feature: any) => {
-    const stateName = feature.properties.st_nm || feature.properties.ST_NM;
+    const stateName = feature.properties.st_nm || feature.properties.ST_NM || feature.properties.NAME_1;
     
-    // Find the matching state data
-    const stateData = statesData.find(
-      (state) => state.stateName.toLowerCase() === stateName.toLowerCase()
-    );
-    
-    if (stateData) {
-      // Navigate to the state detail page
-      router.push(`/map/${stateData.stateCode}`);
+    if (stateName) {
+      // Convert state name to slug for URL routing
+      // e.g., "Maharashtra" -> "maharashtra", "Andhra Pradesh" -> "andhra-pradesh"
+      const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
+      router.push(`/map/${stateSlug}`);
     }
   };
 
