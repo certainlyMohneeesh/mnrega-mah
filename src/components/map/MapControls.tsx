@@ -53,7 +53,7 @@ export function MapControls({
       )}
 
       {/* Zoom Controls */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      {/* <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <button
           onClick={onZoomIn}
           className="block px-3 py-2 hover:bg-gray-100 transition-colors border-b border-gray-200"
@@ -68,7 +68,7 @@ export function MapControls({
         >
           <ZoomOut className="w-5 h-5" />
         </button>
-      </div>
+      </div> */}
 
       {/* Action Controls */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -79,13 +79,13 @@ export function MapControls({
         >
           <Maximize2 className="w-5 h-5" />
         </button>
-        <button
+        {/* <button
           onClick={onExport}
           className="block px-3 py-2 hover:bg-gray-100 transition-colors"
           title="Export Map"
         >
           <Download className="w-5 h-5" />
-        </button>
+        </button> */}
       </div>
     </div>
   );
