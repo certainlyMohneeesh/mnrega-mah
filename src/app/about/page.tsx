@@ -106,7 +106,7 @@ export default function AboutPage() {
         {/* Creator Section */}
         <div className="bg-gradient-to-br from-accent-purple to-[#E76D67] rounded-2xl shadow-xl p-8 sm:p-10 text-white">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
               <Code2 className="w-8 h-8 text-black" />
             </div>
             <div>
