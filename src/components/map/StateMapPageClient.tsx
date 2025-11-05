@@ -106,9 +106,8 @@ export function StateMapPageClient({ stateInfo, stateGeoJson, districtsData }: S
     const districtData = districtDataMap.get(districtName);
     
     if (districtData && districtData.hasData) {
-      // Navigate to existing district page
-      const stateSlug = stateInfo.name.toLowerCase().replace(/\s+/g, '-');
-      router.push(`/state/${stateSlug}?district=${districtData.id}`);
+      // Navigate directly to district page
+      router.push(`/district/${districtData.id}`);
     }
   };
 
@@ -201,6 +200,8 @@ export function StateMapPageClient({ stateInfo, stateGeoJson, districtsData }: S
               onFeatureHover={handleFeatureHover}
               getFeatureStyle={getFeatureStyle}
               height="700px"
+              showPermanentLabels={true}
+              labelType="district"
             />
             
             <MapControls
@@ -292,7 +293,7 @@ export function StateMapPageClient({ stateInfo, stateGeoJson, districtsData }: S
             {districtsData.map((district) => (
               <Link
                 key={district.id}
-                href={`/state/${stateInfo.name.toLowerCase().replace(/\s+/g, '-')}?district=${district.id}`}
+                href={`/district/${district.id}`}
                 className="px-3 py-2 bg-gray-50 hover:bg-brand/10 rounded-lg text-sm text-gray-700 hover:text-brand transition-colors"
               >
                 {district.name}

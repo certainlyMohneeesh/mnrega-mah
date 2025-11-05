@@ -128,6 +128,25 @@
   border-top-color: rgba(0, 0, 0, 0.9) !important;
 }
 
+/* Permanent labels for mobile - always visible */
+.leaflet-permanent-label {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  pointer-events: none !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+.leaflet-permanent-label::before {
+  display: none !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -17,6 +17,8 @@ interface IndiaMapProps {
   borderWidth?: number;
   fillOpacity?: number;
   description?: string;
+  showPermanentLabels?: boolean;
+  labelType?: 'state' | 'district'; // To determine which label to show
 }
 
 // Component to fit bounds automatically
@@ -46,9 +48,17 @@ export function IndiaMap({
   borderColor = "#000000",
   borderWidth = 1,
   fillOpacity = 0.7,
-  description = "Click on any state to view details"
+  description = "Click on any state to view details",
+  showPermanentLabels = false, // Default to not showing labels
+  labelType = 'state' // Default to state labels
 }: IndiaMapProps) {
   const geoJsonLayerRef = useRef<LeafletGeoJSON>(null);
+  const labeledFeatures = useRef(new Set<string>());
+
+  // Reset labeled features when geoJsonData changes
+  useEffect(() => {
+    labeledFeatures.current.clear();
+  }, [geoJsonData]);
 
   const defaultStyle = {
     fillColor: fillColor,
@@ -65,14 +75,37 @@ export function IndiaMap({
   };
 
   const onEachFeature = (feature: any, layer: any) => {
-    const stateName = feature.properties.st_nm || feature.properties.ST_NM || feature.properties.district || 'Unknown';
+    // Get the appropriate display name based on labelType
+    let displayName = 'Unknown';
     
-    // Bind tooltip to show state name on hover
-    layer.bindTooltip(stateName, {
-      permanent: false,
-      direction: 'top',
-      className: 'leaflet-custom-tooltip',
-      opacity: 0.9,
+    if (labelType === 'district') {
+      // For district maps, prioritize district properties
+      displayName = feature.properties.district || 
+                   feature.properties.dtname || 
+                   feature.properties.NAME_2 || 
+                   'Unknown';
+    } else {
+      // For state/India maps, prioritize state properties
+      displayName = feature.properties.st_nm || 
+                   feature.properties.ST_NM || 
+                   feature.properties.NAME_1 || 
+                   'Unknown';
+    }
+    
+    // Determine if we should show permanent label for this feature
+    const shouldShowPermanentLabel = showPermanentLabels && !labeledFeatures.current.has(displayName);
+    
+    // Mark this feature as labeled if showing permanent label
+    if (shouldShowPermanentLabel) {
+      labeledFeatures.current.add(displayName);
+    }
+    
+    // Bind tooltip - permanent for mobile (only once per unique name), hover for desktop
+    layer.bindTooltip(displayName, {
+      permanent: shouldShowPermanentLabel,
+      direction: 'center',
+      className: shouldShowPermanentLabel ? 'leaflet-permanent-label' : 'leaflet-custom-tooltip',
+      opacity: shouldShowPermanentLabel ? 1 : 0.9,
     });
 
     // Add hover and click interactions
@@ -80,7 +113,9 @@ export function IndiaMap({
       mouseover: (e: any) => {
         const layer = e.target;
         layer.setStyle(hoverStyle);
-        layer.openTooltip();
+        if (!showPermanentLabels) {
+          layer.openTooltip();
+        }
         
         if (onFeatureHover) {
           onFeatureHover(feature);
@@ -90,7 +125,9 @@ export function IndiaMap({
         if (geoJsonLayerRef.current) {
           geoJsonLayerRef.current.resetStyle(e.target);
         }
-        e.target.closeTooltip();
+        if (!showPermanentLabels) {
+          e.target.closeTooltip();
+        }
       },
       click: (e: any) => {
         if (onFeatureClick) {

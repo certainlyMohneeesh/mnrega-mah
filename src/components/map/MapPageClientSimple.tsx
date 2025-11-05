@@ -83,6 +83,7 @@ export function MapPageClient({ statesData, indiaGeoJson }: MapPageClientProps) 
                 borderWidth={1}
                 fillOpacity={0.7}
                 description="Click on any state to view district-level data"
+                showPermanentLabels={true}
               />
             </MapWrapper>
           </div>
