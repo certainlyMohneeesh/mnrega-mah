@@ -319,17 +319,24 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
                 <Link 
-                  href="#states"
+                  href="/map"
                   className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-semibold transition-all border-2 border-white hover:bg-white hover:text-[#E76D67] transform hover:scale-105 shadow-lg"
                 >
-                  <MapPin className="h-4 w-4" />
-                  Explore by State
+                  🗺️ Interactive Map
                   <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link 
+                  href="#states"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+                  style={{ backgroundColor: '#514E80', color: 'white' }}
+                >
+                  <MapPin className="h-4 w-4" />
+                  Explore States
                 </Link>
                 <Link 
                   href="/compare"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
-                  style={{ backgroundColor: '#514E80', color: 'white' }}
+                  style={{ backgroundColor: '#252653', color: 'white' }}
                 >
                   <BarChart3 className="h-4 w-4" />
                   Compare Data
@@ -1173,6 +1180,11 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                 <li>
                   <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">
                     {t('nav.home')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/map" className="text-gray-600 hover:text-gray-900 transition-colors font-semibold">
+                    🗺️ Interactive Map
                   </Link>
                 </li>
                 <li>
