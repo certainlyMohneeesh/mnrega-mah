@@ -9,7 +9,6 @@ import { StatCard } from "@/components/stat-card";
 import { DistrictCard } from "@/components/district-card";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { LocationDetector } from "@/components/location-detector";
-import { InteractiveIndiaMapCSS } from "@/components/interactive-india-map-css";
 import {
   Select,
   SelectContent,
@@ -704,65 +703,135 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
         </div>
       </section>
 
-      {/* Interactive India Map Section */}
+      {/* Interactive Map CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
-        <div className="mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
-                <MapPin className="inline-block w-4 h-4 mr-2" />
-                Explore by State
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-accent-purple mb-4">
-                Navigate India's MGNREGA Data
-              </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Click on any state to explore detailed district-level employment and expenditure data across all 36 Indian states and Union Territories
-              </p>
-            </motion.div>
-          </div>
-
-          {/* Interactive Map */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <InteractiveIndiaMapCSS className="mb-8" />
-          </motion.div>
-
-          {/* Quick Stats about all states */}
+        <div className="mx-auto max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-center mt-12"
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-8"
           >
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              <div className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl">
-                <div className="text-3xl font-bold text-primary mb-2">36</div>
-                <div className="text-sm text-muted-foreground">States & UTs</div>
-              </div>
-              <div className="p-6 bg-gradient-to-br from-accent/5 to-accent/10 rounded-xl">
-                <div className="text-3xl font-bold text-accent-purple mb-2">740+</div>
-                <div className="text-sm text-muted-foreground">Total Districts</div>
-              </div>
-              <div className="p-6 bg-gradient-to-br from-visuals-6/5 to-visuals-6/10 rounded-xl">
-                <div className="text-3xl font-bold text-visuals-6 mb-2">14K+</div>
-                <div className="text-sm text-muted-foreground">Data Points</div>
-              </div>
-              <div className="p-6 bg-gradient-to-br from-visuals-8/5 to-visuals-8/10 rounded-xl">
-                <div className="text-3xl font-bold text-visuals-8 mb-2">Live</div>
-                <div className="text-sm text-muted-foreground">Real-time Updates</div>
-              </div>
+            {/* Icon */}
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-accent-purple/10 rounded-full">
+              <MapPin className="w-10 h-10 text-accent-purple" />
             </div>
+
+            {/* Heading */}
+            <div className="space-y-4">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900">
+                Explore Our Interactive Map
+              </h2>
+              <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Visualize MGNREGA data across India with our new interactive map. Click on states to drill down to districts, view real-time metrics, and compare performance.
+              </p>
+            </div>
+
+            {/* Features Grid */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto pt-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+              >
+                <div className="text-3xl font-bold text-gray-900 mb-2">36</div>
+                <div className="text-sm text-gray-600">States & Union Territories</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+              >
+                <div className="text-3xl font-bold text-gray-900 mb-2">700+</div>
+                <div className="text-sm text-gray-600">Districts with Data</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+              >
+                <div className="text-3xl font-bold text-gray-900 mb-2">4</div>
+                <div className="text-sm text-gray-600">Metrics to Visualize</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="bg-gray-50 rounded-xl p-6 border border-gray-200"
+              >
+                <div className="text-3xl font-bold text-gray-900 mb-2">Live</div>
+                <div className="text-sm text-gray-600">Real-time Updates</div>
+              </motion.div>
+            </div>
+
+            {/* Key Features */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto pt-8"
+            >
+              <div className="text-center space-y-2">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-accent-purple/10 rounded-lg mb-3">
+                  <svg className="w-6 h-6 text-accent-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Click & Explore</h3>
+                <p className="text-sm text-gray-600">Click on any state to view district-level data</p>
+              </div>
+
+              <div className="text-center space-y-2">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-accent-purple/10 rounded-lg mb-3">
+                  <BarChart3 className="w-6 h-6 text-accent-purple" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Visual Analytics</h3>
+                <p className="text-sm text-gray-600">Color-coded states based on selected metrics</p>
+              </div>
+
+              <div className="text-center space-y-2">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-accent-purple/10 rounded-lg mb-3">
+                  <svg className="w-6 h-6 text-accent-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Detailed Insights</h3>
+                <p className="text-sm text-gray-600">Hover for instant data tooltips and summaries</p>
+              </div>
+            </motion.div>
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="pt-8"
+            >
+              <Link
+                href="/map"
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group text-white"
+                style={{ backgroundColor: '#E76D67' }}
+              >
+                <span>Launch Interactive Map</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <p className="text-sm text-gray-500 mt-4">
+                No installation required • Works on all devices • Updated daily
+              </p>
+            </motion.div>
           </motion.div>
         </div>
       </section>
