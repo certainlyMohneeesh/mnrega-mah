@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { MapWrapper } from '@/components/map/MapWrapper';
+import { MapCreditsFooter } from '@/components/map/MapCreditsFooter';
 
 // Dynamic import to avoid SSR issues with Leaflet
 const IndiaMap = dynamic(() => import('@/components/map/IndiaMap').then(mod => mod.IndiaMap), {
@@ -155,6 +156,8 @@ export function MapPageClient({ statesData, indiaGeoJson }: MapPageClientProps) 
             </div>
           </div>
         </div>
+
+        <MapCreditsFooter />
       </div>
     </div>
   );

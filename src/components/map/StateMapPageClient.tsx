@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 import { MapWrapper } from '@/components/map/MapWrapper';
 import { MapControls } from '@/components/map/MapControls';
 import { MapLegend } from '@/components/map/MapLegend';
+import { MapCreditsFooter } from '@/components/map/MapCreditsFooter';
 import { getColorForValue, formatIndianNumber, getMinMax, generateLegendItems, COLOR_SCALES } from '@/lib/map-utils';
 import { StateInfo } from '@/lib/state-utils';
 import { ArrowLeft } from 'lucide-react';
@@ -302,6 +303,8 @@ export function StateMapPageClient({ stateInfo, stateGeoJson, districtsData }: S
           </div>
         </div>
       </div>
+
+      <MapCreditsFooter />
     </div>
   );
 }
