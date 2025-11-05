@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, TrendingUp, TrendingDown, Users, Briefcase, IndianRupee, Calendar } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, Users, Briefcase, IndianRupee, Calendar, ChevronRight, Home, Map } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/stat-card";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { LineChart } from "@/components/charts/line-chart";
 import { BarChart } from "@/components/charts/bar-chart";
 import { PieChart } from "@/components/charts/pie-chart";
@@ -74,13 +82,45 @@ export function DistrictDashboard({ district }: DistrictDashboardProps) {
       {/* Header with Coral Background */}
       <div className="py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: '#E76D67' }}>
         <div className="mx-auto max-w-7xl">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-white hover:text-white/90 transition-colors mb-6 text-sm font-medium"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>{t('district.backToDistricts')}</span>
-          </Link>
+          {/* Breadcrumb Navigation */}
+          <Breadcrumb className="mb-6">
+            <BreadcrumbList className="text-white">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/" className="inline-flex items-center gap-1.5 text-white hover:text-white/80">
+                    <Home className="h-4 w-4" />
+                    <span>Home</span>
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="text-white/60" />
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/map" className="inline-flex items-center gap-1.5 text-white hover:text-white/80">
+                    <Map className="h-4 w-4" />
+                    <span>India Map</span>
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="text-white/60" />
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link 
+                    href={`/map/${district.stateName.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="text-white hover:text-white/80"
+                  >
+                    {district.stateName}
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="text-white/60" />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-white font-semibold">
+                  {district.name}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
           
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div>
