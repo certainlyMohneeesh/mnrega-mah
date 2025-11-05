@@ -96,11 +96,12 @@ export function MapPageClient({ statesData, indiaGeoJson }: MapPageClientProps) 
   };
 
   const handleFeatureClick = (feature: any) => {
-    const stateName = feature.properties.ST_NM || feature.properties.NAME_1;
-    const stateData = stateDataMap.get(stateName.toLowerCase());
+    const stateName = feature.properties.st_nm || feature.properties.ST_NM || feature.properties.NAME_1;
     
-    if (stateData) {
-      router.push(`/map/${stateData.stateCode}`);
+    if (stateName) {
+      // Convert state name to slug for URL (e.g., "Maharashtra" -> "maharashtra")
+      const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
+      router.push(`/map/${stateSlug}`);
     }
   };
 

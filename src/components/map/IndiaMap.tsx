@@ -1,31 +1,35 @@
 "use client";
 
-import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
-import { LatLngBoundsExpression } from 'leaflet';
-import { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
+import { MapContainer, GeoJSON, ZoomControl, useMap } from 'react-leaflet';
+import type { LatLngBoundsExpression, GeoJSON as LeafletGeoJSON, Layer } from 'leaflet';
+import { useEffect, useRef } from 'react';
 
 interface IndiaMapProps {
   geoJsonData: any;
   onFeatureClick?: (feature: any) => void;
   onFeatureHover?: (feature: any) => void;
+  getFeatureStyle?: (feature: any) => any;
   center?: [number, number];
   zoom?: number;
-  bounds?: LatLngBoundsExpression;
   height?: string;
-  getFeatureStyle?: (feature: any) => any;
-  showTooltip?: boolean;
+  fillColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
+  fillOpacity?: number;
+  description?: string;
 }
 
-// Component to fit bounds when data changes
-function FitBounds({ bounds }: { bounds?: LatLngBoundsExpression }) {
+// Component to fit bounds automatically
+function FitBounds() {
   const map = useMap();
   
   useEffect(() => {
-    if (bounds) {
-      map.fitBounds(bounds, { padding: [50, 50] });
-    }
-  }, [bounds, map]);
+    // Fit map to show all of India with padding
+    map.fitBounds([
+      [8.4, 68.7], // Southwest corner
+      [35.5, 97.4], // Northeast corner
+    ], { padding: [20, 20] });
+  }, [map]);
   
   return null;
 }
@@ -34,67 +38,70 @@ export function IndiaMap({
   geoJsonData,
   onFeatureClick,
   onFeatureHover,
-  center = [20.5937, 78.9629], // Center of India
-  zoom = 5,
-  bounds,
-  height = "600px",
   getFeatureStyle,
-  showTooltip = true,
+  center = [22, 80], // Center of India
+  zoom = 4,
+  height = "600px",
+  fillColor = "#3498db",
+  borderColor = "#000000",
+  borderWidth = 1,
+  fillOpacity = 0.7,
+  description = "Click on any state to view details"
 }: IndiaMapProps) {
-  const geoJsonLayerRef = useRef<L.GeoJSON>(null);
-  const [tooltipContent, setTooltipContent] = useState<string>('');
-  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
+  const geoJsonLayerRef = useRef<LeafletGeoJSON>(null);
 
   const defaultStyle = {
-    fillColor: '#3b82f6',
-    weight: 2,
+    fillColor: fillColor,
+    weight: borderWidth,
     opacity: 1,
-    color: 'white',
-    fillOpacity: 0.6,
+    color: borderColor,
+    fillOpacity: fillOpacity,
   };
 
   const hoverStyle = {
-    weight: 3,
-    color: '#1e40af',
-    fillOpacity: 0.8,
+    weight: borderWidth + 1,
+    fillOpacity: Math.min(fillOpacity + 0.2, 1),
+    dashArray: '0 4 0',
   };
 
-  const onEachFeature = (feature: any, layer: L.Layer) => {
+  const onEachFeature = (feature: any, layer: any) => {
+    const stateName = feature.properties.st_nm || feature.properties.ST_NM || feature.properties.district || 'Unknown';
+    
+    // Bind tooltip to show state name on hover
+    layer.bindTooltip(stateName, {
+      permanent: false,
+      direction: 'top',
+      className: 'leaflet-custom-tooltip',
+      opacity: 0.9,
+    });
+
+    // Add hover and click interactions
     layer.on({
-      mouseover: (e: L.LeafletMouseEvent) => {
+      mouseover: (e: any) => {
         const layer = e.target;
         layer.setStyle(hoverStyle);
+        layer.openTooltip();
         
         if (onFeatureHover) {
           onFeatureHover(feature);
         }
-        
-        if (showTooltip) {
-          const districtName = feature.properties.district || feature.properties.NAME_1 || feature.properties.ST_NM || 'Unknown';
-          setTooltipContent(districtName);
-          setTooltipPosition({ x: e.originalEvent.clientX, y: e.originalEvent.clientY });
-        }
       },
-      mouseout: (e: L.LeafletMouseEvent) => {
+      mouseout: (e: any) => {
         if (geoJsonLayerRef.current) {
           geoJsonLayerRef.current.resetStyle(e.target);
         }
-        setTooltipPosition(null);
+        e.target.closeTooltip();
       },
-      mousemove: (e: L.LeafletMouseEvent) => {
-        if (showTooltip) {
-          setTooltipPosition({ x: e.originalEvent.clientX, y: e.originalEvent.clientY });
-        }
-      },
-      click: (e: L.LeafletMouseEvent) => {
+      click: (e: any) => {
         if (onFeatureClick) {
           onFeatureClick(feature);
         }
       },
     });
   };
-
-  const style = (feature: any) => {
+  
+  // Style function
+  const styleFeature = (feature: any) => {
     if (getFeatureStyle) {
       return getFeatureStyle(feature);
     }
@@ -102,42 +109,35 @@ export function IndiaMap({
   };
 
   return (
-    <div className="relative" style={{ height }}>
+    <div className="relative bg-gray-100 rounded-lg overflow-hidden" style={{ height }}>
       <MapContainer
         center={center}
         zoom={zoom}
-        style={{ height: '100%', width: '100%' }}
-        className="rounded-lg shadow-lg"
+        style={{ height: '100%', width: '100%', background: '#f3f4f6' }}
+        zoomControl={false}
+        attributionControl={false}
         scrollWheelZoom={true}
-        zoomControl={true}
+        doubleClickZoom={true}
+        dragging={true}
+        className="outline-none"
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        
         {geoJsonData && (
           <GeoJSON
             ref={geoJsonLayerRef}
             data={geoJsonData}
-            style={style}
+            style={styleFeature}
             onEachFeature={onEachFeature}
           />
         )}
         
-        {bounds && <FitBounds bounds={bounds} />}
+        <FitBounds />
+        <ZoomControl position="bottomright" />
       </MapContainer>
 
-      {/* Custom Tooltip */}
-      {tooltipPosition && tooltipContent && (
-        <div
-          className="fixed z-[9999] bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg text-sm pointer-events-none"
-          style={{
-            left: tooltipPosition.x + 10,
-            top: tooltipPosition.y - 40,
-          }}
-        >
-          {tooltipContent}
+      {/* Description overlay */}
+      {description && (
+        <div className="absolute bottom-4 left-4 z-[1000] bg-white/90 backdrop-blur px-4 py-2 rounded-lg shadow-lg">
+          <p className="text-sm text-gray-700 font-medium">{description}</p>
         </div>
       )}
     </div>

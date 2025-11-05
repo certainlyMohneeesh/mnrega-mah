@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { MapPageClient } from '@/components/map/MapPageClient';
+import { MapPageClient } from '@/components/map/MapPageClientSimple';
 import prisma from '@/lib/prisma';
 import fs from 'fs/promises';
 import path from 'path';

@@ -112,6 +112,22 @@
   --sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
+/* Custom Leaflet tooltip styling */
+.leaflet-custom-tooltip {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+}
+
+.leaflet-custom-tooltip::before {
+  border-top-color: rgba(0, 0, 0, 0.9) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
