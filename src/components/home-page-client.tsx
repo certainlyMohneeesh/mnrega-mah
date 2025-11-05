@@ -367,7 +367,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
       </section>
 
       {/* National Stats - Showcase India-wide Impact */}
-      {stateStats && (
+      {!isLoadingStates && states.length > 0 && (
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
           <div className="mx-auto max-w-6xl">
             <motion.div 
@@ -394,8 +394,8 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
               >
                 <StatCard
                   title="Total Expenditure"
-                  value={formatIndianNumber(stateStats.aggregates.totalExpenditure)}
-                  subtitle={`Across ${stateStats.aggregates.totalDistricts} districts tracked`}
+                  value={formatIndianNumber(states.reduce((sum, s) => sum + s.totalExpenditure, 0))}
+                  subtitle={`Across ${states.filter(s => s.hasData).length} states with data`}
                   icon={IndianRupee}
                   className="border-l-4 border-brand hover:shadow-xl transition-shadow"
                 />
@@ -409,7 +409,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
               >
                 <StatCard
                   title="Households Employed"
-                  value={formatNumber(stateStats.aggregates.householdsWorked)}
+                  value={formatNumber(states.reduce((sum, s) => sum + s.totalHouseholdsWorked, 0))}
                   subtitle="Families provided livelihood"
                   icon={Users}
                   className="border-l-4 border-accent-purple hover:shadow-xl transition-shadow"
@@ -424,8 +424,8 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
               >
                 <StatCard
                   title="Works Completed"
-                  value={formatNumber(stateStats.aggregates.worksCompleted)}
-                  subtitle={`${formatNumber(stateStats.aggregates.worksOngoing)} currently ongoing`}
+                  value={formatNumber(states.reduce((sum, s) => sum + s.totalWorksCompleted, 0))}
+                  subtitle={`Total development works`}
                   icon={Briefcase}
                   className="border-l-4 border-visuals-6 hover:shadow-xl transition-shadow"
                 />
@@ -439,8 +439,8 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
               >
                 <StatCard
                   title="Person-Days Generated"
-                  value={formatNumber(stateStats.aggregates.personDaysGenerated)}
-                  subtitle={`${formatNumber(stateStats.aggregates.womenPersonDays)} by women workers`}
+                  value={formatNumber(states.reduce((sum, s) => sum + s.totalPersonDays, 0))}
+                  subtitle={`Employment opportunities created`}
                   icon={TrendingUp}
                   className="border-l-4 border-visuals-8 hover:shadow-xl transition-shadow"
                 />
