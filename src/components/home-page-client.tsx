@@ -1252,12 +1252,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
                 </li>
                 <li>
                   <Link href="/map" className="text-gray-600 hover:text-gray-900 transition-colors font-semibold">
-                    🗺️ Interactive Map
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">
-                    {t('nav.districts')}
+                    Interactive Map
                   </Link>
                 </li>
                 <li>
