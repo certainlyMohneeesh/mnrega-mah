@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Github, Code2, Database, Map, BarChart3, Globe, Zap } from "lucide-react";
+import { ArrowLeft, ExternalLink, Github, Code2, Database, Map, BarChart3, Globe, Zap, BookOpen } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About | MGNREGA India Dashboard",
@@ -140,6 +140,42 @@ export default function AboutPage() {
             >
               <Github className="w-4 h-4" />
               <span>GitHub</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Blog CTA Section */}
+        <div className="mt-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-8 sm:p-10 text-white relative overflow-hidden">
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">The Journey Behind This Project</h2>
+                <p className="text-white/80 text-sm">Read the full story on my blog</p>
+              </div>
+            </div>
+
+            <p className="text-white/90 leading-relaxed mb-6">
+              Curious about how this dashboard came to life? From scraping government data to building 
+              interactive maps, I've documented the entire development process, challenges faced, and 
+              lessons learned in building a full-stack data visualization platform.
+            </p>
+
+            <a
+              href="https://blog.cyth.app/blog/690a43796d51834cc948de38"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-600 rounded-xl font-bold hover:bg-gray-50 transition-all transform hover:scale-105 shadow-lg"
+            >
+              <BookOpen className="w-5 h-5" />
+              <span>Read the Full Story</span>
+              <ExternalLink className="w-4 h-4" />
             </a>
           </div>
         </div>
