@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { MapWrapper } from '@/components/map/MapWrapper';
 import { MapCreditsFooter } from '@/components/map/MapCreditsFooter';
@@ -154,6 +155,43 @@ export function MapPageClient({ statesData, indiaGeoJson }: MapPageClientProps) 
                 <li>• Use <strong>scroll wheel</strong> or zoom controls to zoom in/out</li>
               </ul>
             </div>
+          </div>
+        </div>
+
+        {/* All States Section */}
+        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">All States & Union Territories</h2>
+            <p className="text-gray-600">
+              To see individual state's data, select any state from the list below
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {statesData
+              .sort((a, b) => a.stateName.localeCompare(b.stateName))
+              .map((state) => {
+                const stateSlug = state.stateName.toLowerCase().replace(/\s+/g, '-');
+                return (
+                  <Link
+                    key={state.stateCode}
+                    href={`/state/${stateSlug}`}
+                    className="group relative px-4 py-3 bg-gradient-to-br from-gray-50 to-gray-100 hover:from-accent-purple/10 hover:to-brand/10 rounded-lg text-sm font-medium text-gray-700 hover:text-accent-purple transition-all border border-gray-200 hover:border-accent-purple hover:shadow-md"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="line-clamp-2">{state.stateName}</span>
+                      <svg 
+                        className="w-4 h-4 text-gray-400 group-hover:text-accent-purple group-hover:translate-x-1 transition-all flex-shrink-0 ml-2" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Link>
+                );
+              })}
           </div>
         </div>
 

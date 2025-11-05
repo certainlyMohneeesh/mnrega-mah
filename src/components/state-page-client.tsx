@@ -227,28 +227,24 @@ export function StatePageClient({ initialData, pagination: initialPagination }: 
               icon={IndianRupee}
               title={t('home.stats.expenditure')}
               value={formatIndianNumber(metrics.totalExpenditure)}
-              trend={{ value: 8.2, isPositive: true }}
               subtitle={`Across ${metrics.districtsWithData} districts`}
             />
             <StatCard
               icon={Users}
               title={t('home.stats.households')}
               value={formatNumber(metrics.householdsWorked)}
-              trend={{ value: 12.5, isPositive: true }}
               subtitle={t('home.stats.statewide')}
             />
             <StatCard
               icon={Briefcase}
               title={t('home.stats.works')}
               value={formatNumber(metrics.completedWorks)}
-              trend={{ value: 5.3, isPositive: true }}
               subtitle={`${formatNumber(metrics.ongoingWorks)} ${t('home.inProgress')}`}
             />
             <StatCard
               icon={TrendingUp}
               title={t('home.stats.personDays')}
               value={formatNumber(totalPersonDays)}
-              trend={{ value: 15.8, isPositive: true }}
               subtitle={`${formatNumber(metrics.womenPersonDays)} ${t('home.byWomen')}`}
             />
           </div>
