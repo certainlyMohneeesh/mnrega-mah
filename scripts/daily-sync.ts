@@ -1,28 +1,3 @@
-#!/usr/bin/env -S node
-/**
- * CLI optimized daily sync for running on CI (GitHub Actions) or any node runner.
- *
- * Usage:
- *   pnpm run sync:cli                              # Full sync from start
- *   pnpm run sync:cli --from-state="MAHARASHTRA"  # Resume from specific state
- *
- * Resume Flag Explanation:
- *   If a sync fails midway (network error, API rate limit, etc.), you can resume
- *   from the last successful state instead of reprocessing everything.
- *   
- *   Example: Sync fails after completing "MADHYA PRADESH" (state 20/36).
- *   To resume from "MAHARASHTRA" (next state):
- *     pnpm run sync:cli --from-state="MAHARASHTRA"
- *   
- *   This skips states 1-20 and starts fresh from MAHARASHTRA (state 21).
- *   Check the logs to find the last successfully completed state name.
- *
- * Required environment variables (set these in GitHub Actions secrets):
- * - DATABASE_URL (Supabase/Postgres)
- * - DATA_GOV_API_KEY
- * - OPTIONAL: BATCH_SIZE, RESUME_FROM_STATE (can also use --from-state flag)
- */
-
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();

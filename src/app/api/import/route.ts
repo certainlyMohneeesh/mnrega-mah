@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         await Promise.all(
           batch.map(d => 
             prisma.district.upsert({
-              where: { code: d.code },
+              where: { stateCode_code: { stateCode: d.stateCode, code: d.code } },
               update: { name: d.name },
               create: d,
             })

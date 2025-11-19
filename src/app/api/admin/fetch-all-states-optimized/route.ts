@@ -1,17 +1,3 @@
-/**
- * OPTIMIZED BULK IMPORT API - All Indian States
- * 
- * Features:
- * - Batch processing (500 records per batch)
- * - Parallel state processing (3 states concurrently)
- * - Checkpointing (resume from last successful state)
- * - Denormalized fields for fast queries
- * - Smart financial year detection
- * - Transaction safety
- * 
- * Performance: ~30-45 minutes for full import (all states, 2 FYs)
- */
-
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getBulkImportFinancialYears, getSyncConfiguration } from "@/lib/financial-year";
@@ -81,9 +67,7 @@ const toInt = (val: any): number | null => {
   return isNaN(num) ? null : num;
 };
 
-/**
- * Fetch data from data.gov.in API with pagination
- */
+/* Fetch data from data.gov.in API with pagination*/
 async function fetchDataFromAPI(
   stateName: string,
   finYear: string,
@@ -311,9 +295,6 @@ async function processStatesInParallel(
   return results;
 }
 
-/**
- * Main API handler
- */
 export async function POST(request: Request) {
   const startTime = Date.now();
 
